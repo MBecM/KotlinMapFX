@@ -42,22 +42,32 @@ class DefaultTiledMap : Group(), TiledMap {
     }
 
     override fun center(coord: LatLon, zoom: Int) {
-        var xtile = (coord.lon + 180) * (1 shl zoom) / 360.0
-        var ytile = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / Math.PI) * (1 shl zoom - 1)
+        var x = (coord.lon + 180) * (1 shl zoom) / 360.0
+        var y = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / PI) * (1 shl zoom - 1)
 
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
 
-        System.err.println("xTile: " + xtile + ", yTile: " + ytile)
+        System.err.println("x: " + x + ", y: " + y)
 
-        pos.translateX = xtile * -256.0 + (width / 2)
-        pos.translateY = ytile * -256.0 + (height / 2)
+        pos.translateX = x * -256.0 + (width / 2)
+        pos.translateY = y * -256.0 + (height / 2)
 
 
-        translateX = xtile * -256.0 + (width / 2)
-        translateY = ytile * -256.0 + (height / 2)
+        translateX = x * -256.0 + (width / 2)
+        translateY = y * -256.0 + (height / 2)
         this.zoom = zoom
 
+    }
+
+    override fun getCoordinate(x: Double, y: Double): LatLon {
+        val x = translateX / -256.0
+        val y = translateY / -256.0
+
+        val lat = Math.toDegrees(atan(sinh(PI - (y * 2 * PI) / (1 shl zoom))))
+        val lon = (x * 360 / (1 shl zoom)) - 180
+
+        return LatLon(lat, lon)
     }
 
     override fun loadTiles() {

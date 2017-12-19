@@ -13,6 +13,8 @@ interface TiledMap {
 
     fun center(coord: LatLon, zoom: Int = this.zoom)
 
+    fun getCoordinate(x: Double, y: Double) : LatLon
+
     //TODO: just for debuging, will be removed in future
     fun loadTiles()
 }

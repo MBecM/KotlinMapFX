@@ -20,6 +20,11 @@ class DefaultLayeredMap(tiledMap: TiledMap) : Region(), LayeredMap {
             y = it.sceneY - tiledMap.getView().translateY
 
             if (it.button == MouseButton.SECONDARY) {
+//                tiledMap.center(LatLon(54.5745, 18.3908), 16)
+                System.err.println(tiledMap.getCoordinate(it.x, it.y))
+            }
+
+            if (it.button == MouseButton.PRIMARY) {
                 tiledMap.center(LatLon(54.5745, 18.3908), 16)
             }
         }
