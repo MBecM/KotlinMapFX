@@ -1,5 +1,6 @@
 package com.mbecm.kotlinmapfx.layer.tile
 
+import com.mbecm.kotlinmapfx.coord.LatLon
 import javafx.scene.Parent
 
 /**
@@ -9,6 +10,8 @@ interface TiledMap {
     var zoom: Int
 
     fun getView(): Parent
+
+    fun center(coord: LatLon, zoom: Int = this.zoom)
 
     //TODO: just for debuging, will be removed in future
     fun loadTiles()

@@ -1,5 +1,6 @@
 package com.mbecm.kotlinmapfx.layer
 
+import com.mbecm.kotlinmapfx.coord.LatLon
 import com.mbecm.kotlinmapfx.layer.tile.TiledMap
 import javafx.scene.Parent
 import javafx.scene.input.MouseButton
@@ -19,7 +20,7 @@ class DefaultLayeredMap(tiledMap: TiledMap) : Region(), LayeredMap {
             y = it.sceneY - tiledMap.getView().translateY
 
             if (it.button == MouseButton.SECONDARY) {
-                tiledMap.loadTiles()
+                tiledMap.center(LatLon(54.5745, 18.3908), 16)
             }
         }
         setOnMouseDragged {
