@@ -61,12 +61,11 @@ class DefaultTiledMap : Group(), TiledMap {
     }
 
     override fun getCoordinate(x: Double, y: Double): LatLon {
-        val x = translateX / -256.0
-        val y = translateY / -256.0
-
-        val lat = Math.toDegrees(atan(sinh(PI - (y * 2 * PI) / (1 shl zoom))))
-        val lon = (x * 360 / (1 shl zoom)) - 180
-
+        val n = 1 shl zoom
+        val tx = (translateX - x) / -256.0
+        val ty = (translateY - y) / -256.0
+        val lat = Math.toDegrees(atan(sinh(PI - (ty * 2 * PI) / n)))
+        val lon = (tx * 360 / n) - 180
         return LatLon(lat, lon)
     }
 

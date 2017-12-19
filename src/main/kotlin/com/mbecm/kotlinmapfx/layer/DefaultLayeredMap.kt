@@ -21,11 +21,12 @@ class DefaultLayeredMap(tiledMap: TiledMap) : Region(), LayeredMap {
 
             if (it.button == MouseButton.SECONDARY) {
 //                tiledMap.center(LatLon(54.5745, 18.3908), 16)
+                System.err.println(it.x.toString() + "  " + it.y)
                 System.err.println(tiledMap.getCoordinate(it.x, it.y))
             }
 
             if (it.button == MouseButton.PRIMARY) {
-                tiledMap.center(LatLon(54.5745, 18.3908), 16)
+                tiledMap.center(LatLon(54.5745, 18.3908), 15)
             }
         }
         setOnMouseDragged {
