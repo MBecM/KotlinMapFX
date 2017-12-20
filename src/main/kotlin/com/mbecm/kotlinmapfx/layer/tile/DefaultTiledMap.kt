@@ -17,7 +17,7 @@ import kotlin.math.*
  */
 class DefaultTiledMap : Group(), TiledMap {
 
-    val tiles: MutableMap<Int, MutableMap<Long, Image>> = mutableMapOf();
+    val tiles: Array<MutableMap<Long, Tile>> = Array(20) { i -> mutableMapOf<Long, Tile>() }
 
     private var maxXForZoom: Long = 0;
     private var maxYForZoom: Long = 0;
@@ -28,7 +28,6 @@ class DefaultTiledMap : Group(), TiledMap {
     override var zoom: Int = 3
         set(value) {
             field = value
-            tiles.putIfAbsent(zoom, mutableMapOf())
             System.err.println("zoom: " + value)
 
             maxXForZoom = 1L shl zoom
@@ -90,12 +89,8 @@ class DefaultTiledMap : Group(), TiledMap {
 
         for (x in minX..maxX) {
             for (y in minY..maxY) {
-//                tiles.get(zoom)?.put((x + 10) * (y + 20), img);
-
-                val iv = ImageView(tileLoader.generateTile(zoom, x, y))
-
-                children.add(StackPane(iv, Label("x: " + x + ", y: " + y)).apply {
-                    style = "-fx-border-color: black; -fx-border-size:1;"
+                val tile = tiles[zoom].getOrPut(minX * x * y) { tileLoader.generateTile(zoom, x, y) }
+                children.add(tile.apply {
                     translateX = 256 * x.toDouble()
                     translateY = 256 * y.toDouble()
                 })

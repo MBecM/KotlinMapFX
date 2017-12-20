@@ -2,6 +2,7 @@ package com.mbecm.kotlinmapfx.layer.tile.loader
 
 import com.mbecm.kotlinmapfx.OSM_CACHE
 import com.mbecm.kotlinmapfx.OSM_TILE_URL
+import com.mbecm.kotlinmapfx.layer.tile.Tile
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import java.awt.image.RenderedImage
@@ -20,7 +21,7 @@ class TileLoader {
         Files.createDirectories(File(cacheDir).toPath())
     }
 
-    fun generateTile(zoom: Int, x: Long, y: Long): Image {
+    fun generateTile(zoom: Int, x: Long, y: Long): Tile {
         val imageName = y.toString() + ".png"
         val imageDir = zoom.toString() + "/" + x + "/"
 
@@ -29,6 +30,7 @@ class TileLoader {
         val imageFromCache = checkCache(cacheDir + imageDir + imageName)
         val image = imageFromCache ?: Image(url, true)
 
+        val tile = Tile(zoom, x, y, image)
         if (imageFromCache == null) {
             image.progressProperty().addListener { _, _, progress ->
                 if (progress.toDouble() >= 1.0) {
@@ -36,7 +38,7 @@ class TileLoader {
                 }
             }
         }
-        return image
+        return tile
     }
 
     private fun checkCache(cacheFile: String): Image? {
