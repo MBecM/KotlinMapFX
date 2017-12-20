@@ -18,9 +18,8 @@ abstract class AbstractMapController(tiledMap: TiledMap) : MapController {
     }
 
     override fun mousePressed(event: MouseEvent) {
-        x = event.sceneX - tiledMap.getView().translateX
-        y = event.sceneY - tiledMap.getView().translateY
-
+        x = event.x
+        y = event.y
         if (event.button == MouseButton.SECONDARY) {
 //                tiledMap.center(LatLon(54.5745, 18.3908), 16)
             System.err.println(event.x.toString() + "  " + event.y)
@@ -33,8 +32,9 @@ abstract class AbstractMapController(tiledMap: TiledMap) : MapController {
     }
 
     override fun mouseDragged(event: MouseEvent) {
-        tiledMap.getView().translateX = event.sceneX - x
-        tiledMap.getView().translateY = event.sceneY - y
+        tiledMap.shift( event.x - x,  event.y  -y)
+        x = event.x
+        y = event.y
     }
 
     override fun scroll(event: ScrollEvent) {

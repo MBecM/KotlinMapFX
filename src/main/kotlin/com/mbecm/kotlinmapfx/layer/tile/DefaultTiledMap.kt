@@ -69,6 +69,11 @@ class DefaultTiledMap : Group(), TiledMap {
         return LatLon(lat, lon)
     }
 
+    override fun shift(dx: Double, dy: Double) {
+        translateX = translateX + dx
+        translateY = translateY + dy
+    }
+
     override fun loadTiles() {
         children.clear()
         children.add(Circle(15.0, Color.BLACK))
