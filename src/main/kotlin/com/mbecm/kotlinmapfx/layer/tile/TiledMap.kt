@@ -17,6 +17,8 @@ interface TiledMap {
 
     fun shift(dx: Double, dy: Double)
 
+    fun zoom(delta: Double, x: Double, y: Double)
+
     //TODO: just for debuging, will be removed in future
     fun loadTiles()
 }

@@ -24,17 +24,25 @@ class DefaultTiledMap : Group(), TiledMap {
     private var maxYForZoom: Long = 0
     private val tileLoader: TileLoader = TileLoader()
 
+    private var minX = 0L
+    private var maxX = 0L
+    private var minY = 0L
+    private var maxY = 0L
+
     private val pos = Circle(10.0, Color.BLACK)
 
     override var zoom: Int = 3
         set(value) {
-            field = value
-            System.err.println("zoom: $value")
-
             maxXForZoom = 1L shl zoom
             maxYForZoom = 1L shl zoom
+            if (field != value) {
+                field = value
 
-            loadTiles()
+                System.err.println("zoom: $value")
+
+//                children.clear()
+//                loadTiles()
+            }
         }
 
     init {
@@ -42,13 +50,15 @@ class DefaultTiledMap : Group(), TiledMap {
     }
 
     override fun center(coord: LatLon, zoom: Int) {
+        this.zoom = zoom
+
         var x = (coord.lon + 180) * (1 shl zoom) / 360.0
         var y = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / PI) * (1 shl zoom - 1)
 
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
 
-        System.err.println("x: $x, y: $y")
+//        System.err.println("x: $x, y: $y")
 
         pos.translateX = x * -256.0 + (width / 2)
         pos.translateY = y * -256.0 + (height / 2)
@@ -56,8 +66,15 @@ class DefaultTiledMap : Group(), TiledMap {
 
         translateX = x * -256.0 + (width / 2)
         translateY = y * -256.0 + (height / 2)
-        this.zoom = zoom
+//        loadTiles()
 
+
+    }
+
+    override fun zoom(delta: Double, x: Double, y: Double) {
+        val latlon = getCoordinate(x, y)
+        val newZoom = if (delta > 0) zoom+1 else zoom-1
+        center(latlon, newZoom)
     }
 
     override fun getCoordinate(x: Double, y: Double): LatLon {
@@ -70,34 +87,55 @@ class DefaultTiledMap : Group(), TiledMap {
     }
 
     override fun shift(dx: Double, dy: Double) {
-        translateX = translateX + dx
-        translateY = translateY + dy
+        translateX += dx
+        translateY += dy
     }
 
     override fun loadTiles() {
         children.clear()
-        children.add(Circle(15.0, Color.BLACK))
+//        children.add(Circle(15.0, Color.BLACK))
 
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
-        val minX = max(0L, abs(-translateX / 256).toLong()- overlap)
-        val maxX = min(maxXForZoom, abs((-translateX + width) / 256).toLong() + overlap)
-        val minY = max(0L, abs(-translateY / 256).toLong() - overlap)
-        val maxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
+        val newMinX = max(0L, abs(-translateX / 256).toLong() - overlap)
+        val newMaxX = min(maxXForZoom, abs((-translateX + width) / 256).toLong() + overlap)
+        val newMinY = max(0L, abs(-translateY / 256).toLong() - overlap)
+        val newMaxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
 
         System.err.println("minX: $minX, maxX: $maxX")
         System.err.println("minY: $minY, maxY: $maxY")
+        System.err.println("newMinX: $newMinX, newMaxX: $newMaxX")
+        System.err.println("newMinY: $newMinY, newMaxY: $newMaxY")
 
-        for (x in minX..maxX) {
-            for (y in minY..maxY) {
-                val tile = tiles[zoom].getOrPut(minX * x * y) { tileLoader.generateTile(zoom, x, y) }
-                children.add(tile.apply {
-                    translateX = 256 * x.toDouble()
-                    translateY = 256 * y.toDouble()
-                })
+
+//        if (maxX < newMinX || newMaxX < minX) {
+//
+//            for (x in minX..maxX) {
+//                for (y in minY..maxY) {
+//                    val tile = tiles[zoom].getOrPut(x * y) { tileLoader.generateTile(zoom, x, y) }
+//                    children.remove(tile)
+//                }
+//            }
+//            System.err.println(children.size)
+
+            for (x in newMinX..newMaxX) {
+                for (y in newMinY..newMaxY) {
+                    val tile = tiles[zoom].getOrPut(x * y) { tileLoader.generateTile(zoom, x, y) }
+                    children.add(tile.apply {
+                        translateX = 256 * x.toDouble()
+                        translateY = 256 * y.toDouble()
+                    })
+                }
             }
-        }
-        children.add(pos)
+
+
+//        }
+
+        minX = newMinX
+        maxX = newMaxX
+        minY = newMinY
+        maxY = newMaxY
+//        children.add(pos)
     }
 
     override fun getView(): Parent {

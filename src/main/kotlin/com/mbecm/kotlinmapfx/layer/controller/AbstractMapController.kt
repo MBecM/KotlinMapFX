@@ -22,12 +22,12 @@ abstract class AbstractMapController(tiledMap: TiledMap) : MapController {
         y = event.y
         if (event.button == MouseButton.SECONDARY) {
 //                tiledMap.center(LatLon(54.5745, 18.3908), 16)
-            System.err.println(event.x.toString() + "  " + event.y)
-            System.err.println(tiledMap.getCoordinate(event.x, event.y))
+//            System.err.println(event.x.toString() + "  " + event.y)
+//            System.err.println(tiledMap.getCoordinate(event.x, event.y))
         }
 
         if (event.button == MouseButton.PRIMARY) {
-            tiledMap.center(LatLon(54.5745, 18.3908), 15)
+//            tiledMap.center(LatLon(54.5745, 18.3908), 15)
         }
     }
 
@@ -38,18 +38,19 @@ abstract class AbstractMapController(tiledMap: TiledMap) : MapController {
     }
 
     override fun scroll(event: ScrollEvent) {
-        var zoom = tiledMap.zoom;
-        if (event.deltaY > 0) {
-            zoom++;
-            if (zoom > 18) {
-                zoom = 18
-            }
-        } else {
-            zoom--;
-            if (zoom < 0) {
-                zoom = 0
-            }
-        }
-        tiledMap.zoom = zoom
+        tiledMap.zoom(event.deltaY, event.x,event.y)
+//        var zoom = tiledMap.zoom;
+//        if (event.deltaY > 0) {
+//            zoom++;
+//            if (zoom > 18) {
+//                zoom = 18
+//            }
+//        } else {
+//            zoom--;
+//            if (zoom < 0) {
+//                zoom = 0
+//            }
+//        }
+//        tiledMap.zoom = zoom
     }
 }
