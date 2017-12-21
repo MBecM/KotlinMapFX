@@ -17,7 +17,7 @@ import kotlin.math.*
  */
 class DefaultTiledMap : Group(), TiledMap {
 
-    val tiles: Array<MutableMap<Long, Tile>> = Array(20) { i -> mutableMapOf<Long, Tile>() }
+    val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { i -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
 
     private val overlap = 2
     private var maxXForZoom: Long = 0
@@ -73,7 +73,7 @@ class DefaultTiledMap : Group(), TiledMap {
 
     override fun zoom(delta: Double, x: Double, y: Double) {
         val latlon = getCoordinate(x, y)
-        val newZoom = if (delta > 0) zoom+1 else zoom-1
+        val newZoom = if (delta > 0) zoom + 1 else zoom - 1
         center(latlon, newZoom)
     }
 
@@ -118,15 +118,15 @@ class DefaultTiledMap : Group(), TiledMap {
 //            }
 //            System.err.println(children.size)
 
-            for (x in newMinX..newMaxX) {
-                for (y in newMinY..newMaxY) {
-                    val tile = tiles[zoom].getOrPut(x * y) { tileLoader.generateTile(zoom, x, y) }
-                    children.add(tile.apply {
-                        translateX = 256 * x.toDouble()
-                        translateY = 256 * y.toDouble()
-                    })
-                }
+        for (x in newMinX..newMaxX) {
+            for (y in newMinY..newMaxY) {
+                val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
+                children.add(tile.apply {
+                    translateX = 256 * x.toDouble()
+                    translateY = 256 * y.toDouble()
+                })
             }
+        }
 
 
 //        }
