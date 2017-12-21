@@ -20,16 +20,16 @@ class DefaultTiledMap : Group(), TiledMap {
     val tiles: Array<MutableMap<Long, Tile>> = Array(20) { i -> mutableMapOf<Long, Tile>() }
 
     private val overlap = 2
-    private var maxXForZoom: Long = 0;
-    private var maxYForZoom: Long = 0;
+    private var maxXForZoom: Long = 0
+    private var maxYForZoom: Long = 0
     private val tileLoader: TileLoader = TileLoader()
 
-    private val pos = Circle(10.0, Color.BLACK);
+    private val pos = Circle(10.0, Color.BLACK)
 
     override var zoom: Int = 3
         set(value) {
             field = value
-            System.err.println("zoom: " + value)
+            System.err.println("zoom: $value")
 
             maxXForZoom = 1L shl zoom
             maxYForZoom = 1L shl zoom
@@ -48,7 +48,7 @@ class DefaultTiledMap : Group(), TiledMap {
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
 
-        System.err.println("x: " + x + ", y: " + y)
+        System.err.println("x: $x, y: $y")
 
         pos.translateX = x * -256.0 + (width / 2)
         pos.translateY = y * -256.0 + (height / 2)
@@ -80,13 +80,13 @@ class DefaultTiledMap : Group(), TiledMap {
 
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
-        val minX = max(0L, abs(-translateX / 256).toLong()- overlap);
+        val minX = max(0L, abs(-translateX / 256).toLong()- overlap)
         val maxX = min(maxXForZoom, abs((-translateX + width) / 256).toLong() + overlap)
         val minY = max(0L, abs(-translateY / 256).toLong() - overlap)
         val maxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
 
-        System.err.println("minX: " + minX + ", maxX: " + maxX);
-        System.err.println("minY: " + minY + ", maxY: " + maxY);
+        System.err.println("minX: $minX, maxX: $maxX")
+        System.err.println("minY: $minY, maxY: $maxY")
 
         for (x in minX..maxX) {
             for (y in minY..maxY) {
