@@ -19,6 +19,7 @@ class DefaultTiledMap : Group(), TiledMap {
 
     val tiles: Array<MutableMap<Long, Tile>> = Array(20) { i -> mutableMapOf<Long, Tile>() }
 
+    private val overlap = 2
     private var maxXForZoom: Long = 0;
     private var maxYForZoom: Long = 0;
     private val tileLoader: TileLoader = TileLoader()
@@ -79,10 +80,10 @@ class DefaultTiledMap : Group(), TiledMap {
 
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
-        val minX = max(0L, abs(-translateX / 256).toLong());
-        val maxX = min(maxXForZoom, abs((-translateX + width) / 256).toLong())
-        val minY = max(0L, abs(-translateY / 256).toLong())
-        val maxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong())
+        val minX = max(0L, abs(-translateX / 256).toLong()- overlap);
+        val maxX = min(maxXForZoom, abs((-translateX + width) / 256).toLong() + overlap)
+        val minY = max(0L, abs(-translateY / 256).toLong() - overlap)
+        val maxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
 
         System.err.println("minX: " + minX + ", maxX: " + maxX);
         System.err.println("minY: " + minY + ", maxY: " + maxY);
