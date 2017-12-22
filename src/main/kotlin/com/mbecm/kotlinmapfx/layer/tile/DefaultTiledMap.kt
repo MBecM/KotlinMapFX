@@ -19,7 +19,7 @@ class DefaultTiledMap : Group(), TiledMap {
 
     val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { i -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
 
-    private val overlap = 2
+    private val overlap = -1
     private var maxXForZoom: Long = 0
     private var maxYForZoom: Long = 0
     private val tileLoader: TileLoader = TileLoader()
@@ -33,8 +33,6 @@ class DefaultTiledMap : Group(), TiledMap {
 
     override var zoom: Int = 3
         set(value) {
-            maxXForZoom = 1L shl zoom
-            maxYForZoom = 1L shl zoom
             if (field != value) {
                 field = value
 
@@ -43,6 +41,8 @@ class DefaultTiledMap : Group(), TiledMap {
 //                children.clear()
 //                loadTiles()
             }
+            maxXForZoom = 1L shl zoom
+            maxYForZoom = 1L shl zoom
         }
 
     init {
@@ -66,9 +66,7 @@ class DefaultTiledMap : Group(), TiledMap {
 
         translateX = x * -256.0 + (width / 2)
         translateY = y * -256.0 + (height / 2)
-//        loadTiles()
-
-
+        loadTiles()
     }
 
     override fun zoom(delta: Double, x: Double, y: Double) {
@@ -89,10 +87,11 @@ class DefaultTiledMap : Group(), TiledMap {
     override fun shift(dx: Double, dy: Double) {
         translateX += dx
         translateY += dy
+        loadTiles()
     }
 
     override fun loadTiles() {
-        children.clear()
+//        children.clear()
 //        children.add(Circle(15.0, Color.BLACK))
 
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
@@ -102,40 +101,121 @@ class DefaultTiledMap : Group(), TiledMap {
         val newMinY = max(0L, abs(-translateY / 256).toLong() - overlap)
         val newMaxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
 
-        System.err.println("minX: $minX, maxX: $maxX")
-        System.err.println("minY: $minY, maxY: $maxY")
-        System.err.println("newMinX: $newMinX, newMaxX: $newMaxX")
-        System.err.println("newMinY: $newMinY, newMaxY: $newMaxY")
+        if (newMinX != minX || newMinY != minY) {
+            System.err.println("minX: $minX, maxX: $maxX")
+            System.err.println("minY: $minY, maxY: $maxY")
+            System.err.println("newMinX: $newMinX, newMaxX: $newMaxX")
+            System.err.println("newMinY: $newMinY, newMaxY: $newMaxY")
 
+            if (maxX < newMinX || newMaxX < minX) {
 
-//        if (maxX < newMinX || newMaxX < minX) {
-//
-//            for (x in minX..maxX) {
-//                for (y in minY..maxY) {
-//                    val tile = tiles[zoom].getOrPut(x * y) { tileLoader.generateTile(zoom, x, y) }
-//                    children.remove(tile)
+                for (x in minX..maxX) {
+                    for (y in minY..maxY) {
+                        removeTile(x, y)
+                        System.err.println("REMOVE CLEAR: $x , $y")
+                    }
+                }
+                for (x in newMinX..newMaxX) {
+                    for (y in newMinY..newMaxY) {
+                        addTile(x, y)
+                        System.err.println("ADD CLEAR: $x , $y")
+                    }
+                }
+            } else {
+
+                //delete x
+                for (x in minX..newMinX - 1) {
+                    for (y in newMinY..newMaxY) {
+                        removeTile(x, y)
+//                        System.err.println("REMOVE x: $x , $y")
+                    }
+                }
+                for (x in newMaxX + 1..maxX) {
+                    for (y in newMinY..newMaxY) {
+                        removeTile(x, y)
+//                        System.err.println("REMOVE x2: $x , $y")
+                    }
+                }
+
+                var deltaMinX = 0
+                var deltaMaxX = 0
+//                if (newMinX > minX) {
+//                    deltaMinX = -1
+//                } else if (newMinX < minX) {
+//                    deltaMaxX = -1
 //                }
-//            }
-//            System.err.println(children.size)
+                //delete y
+                for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
+                    for (y in minY..newMinY - 1) {
+                        removeTile(x, y)
+                        System.err.println("REMOVE y: $x , $y")
+                    }
+                }
+                for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
+                    for (y in newMaxY + 1..maxY) {
+                        removeTile(x, y)
+                        System.err.println("REMOVE y2: $x , $y")
+                    }
+                }
 
-        for (x in newMinX..newMaxX) {
-            for (y in newMinY..newMaxY) {
-                val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
-                children.add(tile.apply {
-                    translateX = 256 * x.toDouble()
-                    translateY = 256 * y.toDouble()
-                })
+                //add x
+                for (x in maxX + 1..newMaxX) {
+                    for (y in newMinY..newMaxY) {
+                        addTile(x, y)
+//                        System.err.println("ADD: $x , $y")
+                    }
+                }
+                for (x in newMinX..minX - 1) {
+                    for (y in newMinY..newMaxY) {
+                        addTile(x, y)
+//                        System.err.println("ADD2: $x , $y")
+                    }
+                }
+                deltaMinX = 0
+                deltaMaxX = 0
+//                if (newMinX > minX) {
+//                    deltaMinX = 1
+//                } else if (newMinX < minX) {
+//                    deltaMaxX = 1
+//                }
+
+                //add y
+                for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
+                    for (y in maxY + 1..newMaxY) {
+                        addTile(x, y)
+                        System.err.println("ADD y: $x , $y")
+                    }
+                }
+                for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
+                    for (y in newMinY..minY - 1) {
+                        addTile(x, y)
+                        System.err.println("ADD y2: $x , $y")
+                    }
+                }
             }
-        }
 
 
 //        }
 
-        minX = newMinX
-        maxX = newMaxX
-        minY = newMinY
-        maxY = newMaxY
+            minX = newMinX
+            maxX = newMaxX
+            minY = newMinY
+            maxY = newMaxY
+        }
 //        children.add(pos)
+    }
+
+    private fun addTile(x: Long, y: Long) {
+        val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
+        children.add(tile.apply {
+            translateX = 256 * x.toDouble()
+            translateY = 256 * y.toDouble()
+        })
+    }
+
+    private fun removeTile(x: Long, y: Long) {
+        val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
+        children.remove(tile)
     }
 
     override fun getView(): Parent {
