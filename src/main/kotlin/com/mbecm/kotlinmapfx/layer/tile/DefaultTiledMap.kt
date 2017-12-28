@@ -101,7 +101,8 @@ class DefaultTiledMap : Group(), TiledMap {
         val newMinY = max(0L, abs(-translateY / 256).toLong() - overlap)
         val newMaxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
 
-        if (newMinX != minX || newMinY != minY) {
+        if (newMinX != minX || newMinY != minY || newMaxX != maxX || newMaxY != maxY) {
+            System.err.println("===========================================")
             System.err.println("minX: $minX, maxX: $maxX")
             System.err.println("minY: $minY, maxY: $maxY")
             System.err.println("newMinX: $newMinX, newMaxX: $newMaxX")
@@ -125,33 +126,34 @@ class DefaultTiledMap : Group(), TiledMap {
 
                 //delete x
                 for (x in minX..newMinX - 1) {
-                    for (y in newMinY..newMaxY) {
+                    for (y in min(minY, newMinY)..max(maxY, newMaxY)) {
                         removeTile(x, y)
-//                        System.err.println("REMOVE x: $x , $y")
+                        System.err.println("REMOVE x: $x , $y")
                     }
                 }
                 for (x in newMaxX + 1..maxX) {
-                    for (y in newMinY..newMaxY) {
+                    for (y in min(minY, newMinY)..max(maxY, newMaxY)) {
                         removeTile(x, y)
-//                        System.err.println("REMOVE x2: $x , $y")
+                        System.err.println("REMOVE x2: $x , $y")
                     }
                 }
 
-                var deltaMinX = 0
-                var deltaMaxX = 0
+                var deltaMinX = 0L
+                var deltaMaxX = 0L
 //                if (newMinX > minX) {
 //                    deltaMinX = -1
 //                } else if (newMinX < minX) {
 //                    deltaMaxX = -1
 //                }
                 //delete y
-                for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
+                for (x in min(minX, newMinX)..max(maxX, newMaxX)) {
+//                for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
                     for (y in minY..newMinY - 1) {
                         removeTile(x, y)
                         System.err.println("REMOVE y: $x , $y")
                     }
                 }
-                for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
+                for (x in min(minX, newMinX)..max(maxX, newMaxX)) {
                     for (y in newMaxY + 1..maxY) {
                         removeTile(x, y)
                         System.err.println("REMOVE y2: $x , $y")
@@ -162,22 +164,30 @@ class DefaultTiledMap : Group(), TiledMap {
                 for (x in maxX + 1..newMaxX) {
                     for (y in newMinY..newMaxY) {
                         addTile(x, y)
-//                        System.err.println("ADD: $x , $y")
+                        System.err.println("ADD x: $x , $y")
                     }
                 }
                 for (x in newMinX..minX - 1) {
                     for (y in newMinY..newMaxY) {
                         addTile(x, y)
-//                        System.err.println("ADD2: $x , $y")
+                        System.err.println("ADD x2: $x , $y")
                     }
                 }
                 deltaMinX = 0
                 deltaMaxX = 0
-//                if (newMinX > minX) {
-//                    deltaMinX = 1
-//                } else if (newMinX < minX) {
-//                    deltaMaxX = 1
-//                }
+                if (newMinX > minX) {
+//                    deltaMinX = 0
+                    deltaMaxX = minX - newMinX // -1
+                } else if (newMinX < minX) {
+                    deltaMinX = minX - newMinX // 1
+//                    deltaMaxX = 0
+                }
+
+                if(newMaxX > maxX) {
+                    deltaMaxX = maxX - newMaxX //-1
+                } else if (newMaxX < maxX) {
+                    deltaMinX = maxX - newMaxX // 1
+                }
 
                 //add y
                 for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
