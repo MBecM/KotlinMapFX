@@ -17,9 +17,9 @@ import kotlin.math.*
  */
 class DefaultTiledMap : Group(), TiledMap {
 
-    val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { i -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
+    val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
 
-    private val overlap = -1
+    private val overlap = 2
     private var maxXForZoom: Long = 0
     private var maxYForZoom: Long = 0
     private val tileLoader: TileLoader = TileLoader()
@@ -35,11 +35,12 @@ class DefaultTiledMap : Group(), TiledMap {
         set(value) {
             if (field != value) {
                 field = value
-
                 System.err.println("zoom: $value")
-
-//                children.clear()
-//                loadTiles()
+                children.clear()
+                minX = -100
+                maxX = -100
+                minY = -100
+                maxY = -100
             }
             maxXForZoom = 1L shl zoom
             maxYForZoom = 1L shl zoom
@@ -58,11 +59,8 @@ class DefaultTiledMap : Group(), TiledMap {
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
 
-//        System.err.println("x: $x, y: $y")
-
         pos.translateX = x * -256.0 + (width / 2)
         pos.translateY = y * -256.0 + (height / 2)
-
 
         translateX = x * -256.0 + (width / 2)
         translateY = y * -256.0 + (height / 2)
@@ -91,9 +89,6 @@ class DefaultTiledMap : Group(), TiledMap {
     }
 
     override fun loadTiles() {
-//        children.clear()
-//        children.add(Circle(15.0, Color.BLACK))
-
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
         val newMinX = max(0L, abs(-translateX / 256).toLong() - overlap)
@@ -108,7 +103,7 @@ class DefaultTiledMap : Group(), TiledMap {
             System.err.println("newMinX: $newMinX, newMaxX: $newMaxX")
             System.err.println("newMinY: $newMinY, newMaxY: $newMaxY")
 
-            if (maxX < newMinX || newMaxX < minX) {
+            if (maxX < newMinX || newMaxX < minX || maxY < newMinY || newMaxY < minY) {
 
                 for (x in minX..maxX) {
                     for (y in minY..maxY) {
@@ -138,16 +133,8 @@ class DefaultTiledMap : Group(), TiledMap {
                     }
                 }
 
-                var deltaMinX = 0L
-                var deltaMaxX = 0L
-//                if (newMinX > minX) {
-//                    deltaMinX = -1
-//                } else if (newMinX < minX) {
-//                    deltaMaxX = -1
-//                }
                 //delete y
                 for (x in min(minX, newMinX)..max(maxX, newMaxX)) {
-//                for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
                     for (y in minY..newMinY - 1) {
                         removeTile(x, y)
                         System.err.println("REMOVE y: $x , $y")
@@ -173,29 +160,24 @@ class DefaultTiledMap : Group(), TiledMap {
                         System.err.println("ADD x2: $x , $y")
                     }
                 }
-                deltaMinX = 0
-                deltaMaxX = 0
-                if (newMinX > minX) {
-//                    deltaMinX = 0
-                    deltaMaxX = minX - newMinX // -1
-                } else if (newMinX < minX) {
+                var deltaMinX = 0L
+                var deltaMaxX = 0L
+                if (newMinX < minX) { //ok
                     deltaMinX = minX - newMinX // 1
-//                    deltaMaxX = 0
                 }
 
-                if(newMaxX > maxX) {
+                if (newMaxX > maxX) {//ok
                     deltaMaxX = maxX - newMaxX //-1
-                } else if (newMaxX < maxX) {
-                    deltaMinX = maxX - newMaxX // 1
                 }
 
-                //add y
+                //add y - bottom
                 for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
                     for (y in maxY + 1..newMaxY) {
                         addTile(x, y)
                         System.err.println("ADD y: $x , $y")
                     }
                 }
+                //add y - top
                 for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
                     for (y in newMinY..minY - 1) {
                         addTile(x, y)
@@ -203,16 +185,11 @@ class DefaultTiledMap : Group(), TiledMap {
                     }
                 }
             }
-
-
-//        }
-
             minX = newMinX
             maxX = newMaxX
             minY = newMinY
             maxY = newMaxY
         }
-//        children.add(pos)
     }
 
     private fun addTile(x: Long, y: Long) {
