@@ -1,6 +1,7 @@
 package com.mbecm.kotlinmapfx.layer.tile
 
 import com.mbecm.kotlinmapfx.coord.LatLon
+import javafx.geometry.Point2D
 import javafx.scene.Parent
 
 /**
@@ -15,10 +16,9 @@ interface TiledMap {
 
     fun getCoordinate(x: Double, y: Double): LatLon
 
+    fun getLocalCoordinate(coord: LatLon): Point2D
+
     fun shift(dx: Double, dy: Double)
 
     fun zoom(delta: Double, x: Double, y: Double)
-
-    //TODO: just for debuging, will be removed in future
-    fun loadTiles()
 }

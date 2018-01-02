@@ -2,6 +2,7 @@ package com.mbecm.kotlinmapfx.layer.tile
 
 import com.mbecm.kotlinmapfx.coord.LatLon
 import com.mbecm.kotlinmapfx.layer.tile.loader.TileLoader
+import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
 import javafx.scene.control.Label
@@ -24,10 +25,10 @@ class DefaultTiledMap : Group(), TiledMap {
     private var maxYForZoom: Long = 0
     private val tileLoader: TileLoader = TileLoader()
 
-    private var minX = 0L
-    private var maxX = 0L
-    private var minY = 0L
-    private var maxY = 0L
+    private var minX = -100L
+    private var maxX = -100L
+    private var minY = -100L
+    private var maxY = -100L
 
     private val pos = Circle(10.0, Color.BLACK)
 
@@ -52,25 +53,27 @@ class DefaultTiledMap : Group(), TiledMap {
 
     override fun center(coord: LatLon, zoom: Int) {
         this.zoom = zoom
-
-        var x = (coord.lon + 180) * (1 shl zoom) / 360.0
-        var y = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / PI) * (1 shl zoom - 1)
-
+        val localPoint = getLocalCoordinate(coord)
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
-
-        pos.translateX = x * -256.0 + (width / 2)
-        pos.translateY = y * -256.0 + (height / 2)
-
-        translateX = x * -256.0 + (width / 2)
-        translateY = y * -256.0 + (height / 2)
+        translateX = localPoint.x * -256.0 + (width / 2)
+        translateY = localPoint.y * -256.0 + (height / 2)
         loadTiles()
     }
 
     override fun zoom(delta: Double, x: Double, y: Double) {
         val latlon = getCoordinate(x, y)
-        val newZoom = if (delta > 0) zoom + 1 else zoom - 1
-        center(latlon, newZoom)
+        if (delta > 0) zoom++ else zoom--
+        val point = getLocalCoordinate(latlon)
+        translateX = point.x * -256.0 + x
+        translateY = point.y * -256.0 + y
+        loadTiles()
+    }
+
+    override fun getLocalCoordinate(coord: LatLon): Point2D {
+        var x = (coord.lon + 180) * (1 shl zoom) / 360.0
+        var y = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / PI) * (1 shl zoom - 1)
+        return Point2D(x, y)
     }
 
     override fun getCoordinate(x: Double, y: Double): LatLon {
@@ -88,7 +91,7 @@ class DefaultTiledMap : Group(), TiledMap {
         loadTiles()
     }
 
-    override fun loadTiles() {
+    fun loadTiles() {
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
         val newMinX = max(0L, abs(-translateX / 256).toLong() - overlap)
