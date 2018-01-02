@@ -1,6 +1,7 @@
 package com.mbecm.kotlinmapfx.layer.tile
 
 import com.mbecm.kotlinmapfx.coord.LatLon
+import javafx.beans.property.BooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Parent
 
@@ -9,6 +10,7 @@ import javafx.scene.Parent
  */
 interface TiledMap {
     var zoom: Int
+    val refresh: BooleanProperty
 
     fun getView(): Parent
 

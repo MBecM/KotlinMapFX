@@ -2,6 +2,8 @@ package com.mbecm.kotlinmapfx.layer.tile
 
 import com.mbecm.kotlinmapfx.coord.LatLon
 import com.mbecm.kotlinmapfx.layer.tile.loader.TileLoader
+import javafx.beans.property.BooleanProperty
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
@@ -32,6 +34,7 @@ class DefaultTiledMap : Group(), TiledMap {
 
     private val pos = Circle(10.0, Color.BLACK)
 
+    override val refresh: BooleanProperty = SimpleBooleanProperty(false)
     override var zoom: Int = 3
         set(value) {
             if (field != value) {
@@ -92,6 +95,7 @@ class DefaultTiledMap : Group(), TiledMap {
     }
 
     fun loadTiles() {
+        refresh.set(true)
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
         val newMinX = max(0L, abs(-translateX / 256).toLong() - overlap)
@@ -193,6 +197,8 @@ class DefaultTiledMap : Group(), TiledMap {
             minY = newMinY
             maxY = newMaxY
         }
+
+        refresh.set(false)
     }
 
     private fun addTile(x: Long, y: Long) {
