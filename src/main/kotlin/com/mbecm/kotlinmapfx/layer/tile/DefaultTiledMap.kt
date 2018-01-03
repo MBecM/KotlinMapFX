@@ -1,6 +1,9 @@
 package com.mbecm.kotlinmapfx.layer.tile
 
 import com.mbecm.kotlinmapfx.coord.LatLon
+import com.mbecm.kotlinmapfx.layer.Layer
+import com.mbecm.kotlinmapfx.layer.MarkerLayer
+import com.mbecm.kotlinmapfx.layer.TestMarker
 import com.mbecm.kotlinmapfx.layer.tile.loader.TileLoader
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.SimpleBooleanProperty
@@ -29,9 +32,7 @@ class DefaultTiledMap : Group(), TiledMap {
     private var maxY = -100L
 
     private val tilesLayer = Group()
-    private val layer = Group()
-
-    private val circle = Circle(10.0, Color.RED)
+    private val layers = mutableListOf<Layer>(MarkerLayer(this))
 
     override val refresh: BooleanProperty = SimpleBooleanProperty(false)
     override var zoom: Int = 3
@@ -40,6 +41,7 @@ class DefaultTiledMap : Group(), TiledMap {
                 field = value
                 System.err.println("zoom: $value")
                 tilesLayer.children.clear()
+                layers.forEach { it.refresh() }
                 minX = -100
                 maxX = -100
                 minY = -100
@@ -51,11 +53,9 @@ class DefaultTiledMap : Group(), TiledMap {
 
     init {
         children += tilesLayer
-        children += layer
+        children.addAll(layers.map { it.getView() })
         loadTiles()
-        layer.children += circle
-
-        moveCircle()
+        layers[0].addMarker(TestMarker(pos, ""))
     }
 
     override fun center(coord: LatLon, zoom: Int) {
@@ -65,9 +65,6 @@ class DefaultTiledMap : Group(), TiledMap {
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
         translateX = -localPoint.x + (width / 2)
         translateY = -localPoint.y + (height / 2)
-
-        moveCircle()
-
         loadTiles()
     }
 
@@ -77,17 +74,7 @@ class DefaultTiledMap : Group(), TiledMap {
         val point = getLocalCoordinate(latlon)
         translateX = -point.x + x
         translateY = -point.y + y
-
-        moveCircle()
-
         loadTiles()
-    }
-
-    private fun moveCircle() {
-        val localCoordinate = getLocalCoordinate(pos)
-        System.err.println("dddd $localCoordinate")
-        circle.translateX = localCoordinate.x
-        circle.translateY = localCoordinate.y
     }
 
     override fun getLocalCoordinate(coord: LatLon): Point2D {
