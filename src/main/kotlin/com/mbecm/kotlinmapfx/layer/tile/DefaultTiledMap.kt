@@ -7,10 +7,6 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
-import javafx.scene.control.Label
-import javafx.scene.image.Image
-import javafx.scene.image.ImageView
-import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import kotlin.math.*
@@ -21,7 +17,7 @@ import kotlin.math.*
 class DefaultTiledMap : Group(), TiledMap {
 
     val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
-
+    val pos = LatLon(54.5745, 18.3908)
     private val overlap = 2
     private var maxXForZoom: Long = 0
     private var maxYForZoom: Long = 0
@@ -32,7 +28,10 @@ class DefaultTiledMap : Group(), TiledMap {
     private var minY = -100L
     private var maxY = -100L
 
-    private val pos = Circle(10.0, Color.BLACK)
+    private val tilesLayer = Group()
+    private val layer = Group()
+
+    private val circle = Circle(10.0, Color.RED)
 
     override val refresh: BooleanProperty = SimpleBooleanProperty(false)
     override var zoom: Int = 3
@@ -40,7 +39,7 @@ class DefaultTiledMap : Group(), TiledMap {
             if (field != value) {
                 field = value
                 System.err.println("zoom: $value")
-                children.clear()
+                tilesLayer.children.clear()
                 minX = -100
                 maxX = -100
                 minY = -100
@@ -51,7 +50,12 @@ class DefaultTiledMap : Group(), TiledMap {
         }
 
     init {
+        children += tilesLayer
+        children += layer
         loadTiles()
+        layer.children += circle
+
+        moveCircle()
     }
 
     override fun center(coord: LatLon, zoom: Int) {
@@ -59,8 +63,11 @@ class DefaultTiledMap : Group(), TiledMap {
         val localPoint = getLocalCoordinate(coord)
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
-        translateX = localPoint.x * -256.0 + (width / 2)
-        translateY = localPoint.y * -256.0 + (height / 2)
+        translateX = -localPoint.x + (width / 2)
+        translateY = -localPoint.y + (height / 2)
+
+        moveCircle()
+
         loadTiles()
     }
 
@@ -68,15 +75,25 @@ class DefaultTiledMap : Group(), TiledMap {
         val latlon = getCoordinate(x, y)
         if (delta > 0) zoom++ else zoom--
         val point = getLocalCoordinate(latlon)
-        translateX = point.x * -256.0 + x
-        translateY = point.y * -256.0 + y
+        translateX = -point.x + x
+        translateY = -point.y + y
+
+        moveCircle()
+
         loadTiles()
+    }
+
+    private fun moveCircle() {
+        val localCoordinate = getLocalCoordinate(pos)
+        System.err.println("dddd $localCoordinate")
+        circle.translateX = localCoordinate.x
+        circle.translateY = localCoordinate.y
     }
 
     override fun getLocalCoordinate(coord: LatLon): Point2D {
         var x = (coord.lon + 180) * (1 shl zoom) / 360.0
         var y = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / PI) * (1 shl zoom - 1)
-        return Point2D(x, y)
+        return Point2D(x * 256, y * 256)
     }
 
     override fun getCoordinate(x: Double, y: Double): LatLon {
@@ -203,7 +220,7 @@ class DefaultTiledMap : Group(), TiledMap {
 
     private fun addTile(x: Long, y: Long) {
         val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
-        children.add(tile.apply {
+        tilesLayer.children.add(tile.apply {
             translateX = 256 * x.toDouble()
             translateY = 256 * y.toDouble()
         })
@@ -211,7 +228,7 @@ class DefaultTiledMap : Group(), TiledMap {
 
     private fun removeTile(x: Long, y: Long) {
         val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
-        children.remove(tile)
+        tilesLayer.children.remove(tile)
     }
 
     override fun getView(): Parent {
