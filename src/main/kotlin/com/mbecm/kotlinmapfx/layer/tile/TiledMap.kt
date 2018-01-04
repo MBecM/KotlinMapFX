@@ -8,19 +8,23 @@ import javafx.scene.Parent
 /**
  * @author Mateusz Becker
  */
-interface TiledMap {
-    var zoom: Int
-    val refresh: BooleanProperty
 
-    fun getView(): Parent
-
-    fun center(coord: LatLon, zoom: Int = this.zoom)
-
-    fun getCoordinate(x: Double, y: Double): LatLon
-
-    fun getLocalCoordinate(coord: LatLon): Point2D
-
+interface MovableMap {
     fun shift(dx: Double, dy: Double)
-
     fun zoom(delta: Double, x: Double, y: Double)
+}
+
+interface CoordinateConverter {
+    fun getCoordinate(x: Double, y: Double): LatLon
+    fun getLocalCoordinate(coord: LatLon): Point2D
+}
+
+interface MapOperations  {
+    var zoom: Int
+    fun center(coord: LatLon, zoom: Int = this.zoom)
+}
+
+interface TiledMap : MovableMap, MapOperations, CoordinateConverter {
+    val refresh: BooleanProperty
+    fun getView(): Parent
 }
