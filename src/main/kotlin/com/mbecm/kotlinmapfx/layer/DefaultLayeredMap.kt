@@ -36,7 +36,7 @@ class DefaultLayeredMap(tiledMap: TiledMap = DefaultTiledMap(), val controller: 
         addEventHandler(MouseEvent.MOUSE_CLICKED, { ev ->
             coordinateConsumer?.let { consumer ->
                 consumerButton?.let {
-                    if (it == consumerButton) {
+                    if (ev.button == it) {
                         consumer.invoke(tiledMap.getCoordinate(ev.x, ev.y))
                     }
                 }
