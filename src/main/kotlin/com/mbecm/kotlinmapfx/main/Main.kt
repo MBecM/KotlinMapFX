@@ -2,6 +2,7 @@ package com.mbecm.kotlinmapfx.main
 
 import com.mbecm.kotlinmapfx.coord.LatLon
 import com.mbecm.kotlinmapfx.layer.DefaultLayeredMap
+import com.mbecm.kotlinmapfx.layer.Layer
 import com.mbecm.kotlinmapfx.layer.LayeredMap
 import com.mbecm.kotlinmapfx.layer.controller.DefaultMapController
 import com.mbecm.kotlinmapfx.layer.tile.DefaultTiledMap
@@ -15,16 +16,20 @@ import javafx.stage.Stage
  */
 class Main : Application() {
 
-    val map: LayeredMap = DefaultLayeredMap()
+    val map = MyMap()
 
     override fun start(primaryStage: Stage?) {
         primaryStage?.apply {
             scene = Scene(map.getView(), 500.0, 500.0)
             show()
             map.setCoordinateConsumer(MouseButton.SECONDARY) { System.err.println("Latlon:  $it") }
-            map.center(LatLon(54.5745,18.3908), 16)
+            map.center(LatLon(54.5745, 18.3908), 16)
         }
     }
+}
+
+class MyMap() : DefaultLayeredMap() {
+    val markerLayer: Layer by layer()
 }
 
 fun main(args: Array<String>) {
