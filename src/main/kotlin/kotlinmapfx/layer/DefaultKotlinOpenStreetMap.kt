@@ -12,13 +12,14 @@ import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.Region
+import kotlinmapfx.layer.tile.LayeredMap
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**
  * @author Mateusz Becker
  */
-abstract class DefaultLayeredMap(private val tiledMap: TiledMap = DefaultTiledMap(), val controller: MapController = DefaultMapController(tiledMap)) : Region(), LayeredMap, MapOperations by tiledMap {
+abstract class DefaultKotlinOpenStreetMap(private val tiledMap: TiledMap = DefaultTiledMap(), val controller: MapController = DefaultMapController(tiledMap)) : Region(), KotlinOpenStreetMap, MapOperations by tiledMap, LayeredMap by tiledMap {
 
     private var coordinateConsumer: ((LatLon) -> Unit)? = null
     private var consumerButton: MouseButton? = null
@@ -61,9 +62,11 @@ abstract class DefaultLayeredMap(private val tiledMap: TiledMap = DefaultTiledMa
         return this
     }
 
-    protected fun layer(order: Double = 0.0): ReadOnlyProperty<DefaultLayeredMap, Layer> = object : ReadOnlyProperty<DefaultLayeredMap, Layer> {
-        override fun getValue(thisRef: DefaultLayeredMap, property: KProperty<*>): Layer {
-            return MarkerLayer(tiledMap)
+    protected fun layer(order: Double = 0.0): ReadOnlyProperty<DefaultKotlinOpenStreetMap, Layer> = object : ReadOnlyProperty<DefaultKotlinOpenStreetMap, Layer> {
+        override fun getValue(thisRef: DefaultKotlinOpenStreetMap, property: KProperty<*>): Layer {
+            val layer = MarkerLayer(tiledMap)
+            addLayer(layer, order)
+            return layer
         }
     }
 }

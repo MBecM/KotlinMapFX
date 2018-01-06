@@ -1,15 +1,13 @@
 package kotlinmapfx.main
 
 import kotlinmapfx.coord.LatLon
-import kotlinmapfx.layer.DefaultLayeredMap
+import kotlinmapfx.layer.DefaultKotlinOpenStreetMap
 import kotlinmapfx.layer.Layer
-import kotlinmapfx.layer.LayeredMap
-import kotlinmapfx.layer.controller.DefaultMapController
-import kotlinmapfx.layer.tile.DefaultTiledMap
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.input.MouseButton
 import javafx.stage.Stage
+import kotlinmapfx.layer.TestMarker
 
 /**
  * @author Mateusz Becker
@@ -24,11 +22,12 @@ class Main : Application() {
             show()
             map.setCoordinateConsumer(MouseButton.SECONDARY) { System.err.println("Latlon:  $it") }
             map.center(LatLon(54.5745, 18.3908), 16)
+            map.markerLayer.addMarker(TestMarker(LatLon(54.5745, 18.3908), ""))
         }
     }
 }
 
-class MyMap() : DefaultLayeredMap() {
+class MyMap() : DefaultKotlinOpenStreetMap() {
     val markerLayer: Layer by layer()
 }
 

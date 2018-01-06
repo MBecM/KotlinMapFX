@@ -4,6 +4,7 @@ import kotlinmapfx.coord.LatLon
 import javafx.beans.property.BooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Parent
+import kotlinmapfx.layer.Layer
 
 /**
  * @author Mateusz Becker
@@ -19,12 +20,19 @@ interface CoordinateConverter {
     fun getLocalCoordinate(coord: LatLon): Point2D
 }
 
-interface MapOperations  {
+interface MapOperations {
     var zoom: Int
     fun center(coord: LatLon, zoom: Int = this.zoom)
 }
 
-interface TiledMap : MovableMap, MapOperations, CoordinateConverter {
+interface LayeredMap {
+    fun addLayer(layer: Layer, order: Double = 0.0)
+    fun removeLayer(layer: Layer)
+    fun removeLayer(order: Double)
+    fun reorderLayer(oldOrder: Double, newOrder: Double)
+}
+
+interface TiledMap : LayeredMap, MovableMap, MapOperations, CoordinateConverter {
     val refresh: BooleanProperty
     fun getView(): Parent
 }

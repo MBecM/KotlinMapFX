@@ -32,7 +32,7 @@ class DefaultTiledMap : Group(), TiledMap {
     private var maxY = -100L
 
     private val tilesLayer = Group()
-    private val layers = mutableListOf<Layer>(MarkerLayer(this))
+    private val layers = mutableListOf<Layer>()
 
     override val refresh: BooleanProperty = SimpleBooleanProperty(false)
     override var zoom: Int = 3
@@ -53,9 +53,9 @@ class DefaultTiledMap : Group(), TiledMap {
 
     init {
         children += tilesLayer
-        children.addAll(layers.map { it.getView() })
+//        children.addAll(layers.map { it.getView() })
         loadTiles()
-        layers[0].addMarker(TestMarker(pos, ""))
+//        layers[0].addMarker(TestMarker(pos, ""))
     }
 
     override fun center(coord: LatLon, zoom: Int) {
@@ -216,6 +216,23 @@ class DefaultTiledMap : Group(), TiledMap {
     private fun removeTile(x: Long, y: Long) {
         val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
         tilesLayer.children.remove(tile)
+    }
+
+    override fun addLayer(layer: Layer, order: Double) {
+        layers += layer
+        children += layer.getView()
+    }
+
+    override fun removeLayer(layer: Layer) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun removeLayer(order: Double) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun reorderLayer(oldOrder: Double, newOrder: Double) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun getView(): Parent {
