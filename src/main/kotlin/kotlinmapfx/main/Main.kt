@@ -1,11 +1,11 @@
-package com.mbecm.kotlinmapfx.main
+package kotlinmapfx.main
 
-import com.mbecm.kotlinmapfx.coord.LatLon
-import com.mbecm.kotlinmapfx.layer.DefaultLayeredMap
-import com.mbecm.kotlinmapfx.layer.Layer
-import com.mbecm.kotlinmapfx.layer.LayeredMap
-import com.mbecm.kotlinmapfx.layer.controller.DefaultMapController
-import com.mbecm.kotlinmapfx.layer.tile.DefaultTiledMap
+import kotlinmapfx.coord.LatLon
+import kotlinmapfx.layer.DefaultLayeredMap
+import kotlinmapfx.layer.Layer
+import kotlinmapfx.layer.LayeredMap
+import kotlinmapfx.layer.controller.DefaultMapController
+import kotlinmapfx.layer.tile.DefaultTiledMap
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.input.MouseButton

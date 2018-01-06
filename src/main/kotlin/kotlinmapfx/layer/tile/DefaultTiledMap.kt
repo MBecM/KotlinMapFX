@@ -1,10 +1,10 @@
-package com.mbecm.kotlinmapfx.layer.tile
+package kotlinmapfx.layer.tile
 
-import com.mbecm.kotlinmapfx.coord.LatLon
-import com.mbecm.kotlinmapfx.layer.Layer
-import com.mbecm.kotlinmapfx.layer.MarkerLayer
-import com.mbecm.kotlinmapfx.layer.TestMarker
-import com.mbecm.kotlinmapfx.layer.tile.loader.TileLoader
+import kotlinmapfx.coord.LatLon
+import kotlinmapfx.layer.Layer
+import kotlinmapfx.layer.MarkerLayer
+import kotlinmapfx.layer.TestMarker
+import kotlinmapfx.layer.tile.loader.TileLoader
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Point2D

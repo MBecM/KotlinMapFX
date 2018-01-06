@@ -1,8 +1,8 @@
-package com.mbecm.kotlinmapfx.layer.tile.loader
+package kotlinmapfx.layer.tile.loader
 
-import com.mbecm.kotlinmapfx.OSM_CACHE
-import com.mbecm.kotlinmapfx.OSM_TILE_URL
-import com.mbecm.kotlinmapfx.layer.tile.Tile
+import kotlinmapfx.OSM_CACHE
+import kotlinmapfx.OSM_TILE_URL
+import kotlinmapfx.layer.tile.Tile
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import java.awt.image.RenderedImage

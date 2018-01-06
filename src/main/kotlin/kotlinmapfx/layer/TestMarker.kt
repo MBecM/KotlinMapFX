@@ -1,6 +1,6 @@
-package com.mbecm.kotlinmapfx.layer
+package kotlinmapfx.layer
 
-import com.mbecm.kotlinmapfx.coord.LatLon
+import kotlinmapfx.coord.LatLon
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Point2D
 import javafx.scene.Node

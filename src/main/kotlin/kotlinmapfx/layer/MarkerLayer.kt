@@ -1,7 +1,7 @@
-package com.mbecm.kotlinmapfx.layer
+package kotlinmapfx.layer
 
-import com.mbecm.kotlinmapfx.coord.LatLon
-import com.mbecm.kotlinmapfx.layer.tile.TiledMap
+import kotlinmapfx.coord.LatLon
+import kotlinmapfx.layer.tile.TiledMap
 import javafx.beans.value.ChangeListener
 import javafx.scene.Group
 

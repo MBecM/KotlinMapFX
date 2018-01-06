@@ -1,6 +1,6 @@
-package com.mbecm.kotlinmapfx.layer
+package kotlinmapfx.layer
 
-import com.mbecm.kotlinmapfx.layer.tile.TiledMap
+import kotlinmapfx.layer.tile.TiledMap
 import javafx.scene.Group
 
 /**

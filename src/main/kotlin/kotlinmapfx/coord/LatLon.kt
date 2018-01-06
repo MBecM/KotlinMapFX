@@ -1,4 +1,4 @@
-package com.mbecm.kotlinmapfx.coord
+package kotlinmapfx.coord
 
 /**
  * @author Mateusz Becker

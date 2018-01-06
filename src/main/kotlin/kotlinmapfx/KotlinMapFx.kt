@@ -1,4 +1,4 @@
-package com.mbecm.kotlinmapfx
+package kotlinmapfx
 
 /**
  * @author Mateusz Becker

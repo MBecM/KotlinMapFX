@@ -1,7 +1,7 @@
-package com.mbecm.kotlinmapfx.layer
+package kotlinmapfx.layer
 
-import com.mbecm.kotlinmapfx.coord.LatLon
-import com.mbecm.kotlinmapfx.layer.tile.MapOperations
+import kotlinmapfx.coord.LatLon
+import kotlinmapfx.layer.tile.MapOperations
 import javafx.scene.Parent
 import javafx.scene.input.MouseButton
 

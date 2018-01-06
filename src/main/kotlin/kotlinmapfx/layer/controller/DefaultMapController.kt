@@ -1,6 +1,6 @@
-package com.mbecm.kotlinmapfx.layer.controller
+package kotlinmapfx.layer.controller
 
-import com.mbecm.kotlinmapfx.layer.tile.MovableMap
+import kotlinmapfx.layer.tile.MovableMap
 
 /**
  * @author Mateusz Becker

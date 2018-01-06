@@ -1,6 +1,6 @@
-package com.mbecm.kotlinmapfx.layer.tile
+package kotlinmapfx.layer.tile
 
-import com.mbecm.kotlinmapfx.coord.LatLon
+import kotlinmapfx.coord.LatLon
 import javafx.beans.property.BooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Parent

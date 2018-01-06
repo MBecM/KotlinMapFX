@@ -1,4 +1,4 @@
-package com.mbecm.kotlinmapfx.layer.tile
+package kotlinmapfx.layer.tile
 
 import javafx.scene.control.Label
 import javafx.scene.image.Image
