@@ -63,10 +63,14 @@ abstract class DefaultKotlinOpenStreetMap(private val tiledMap: TiledMap = Defau
     }
 
     protected fun layer(order: Double = 0.0): ReadOnlyProperty<DefaultKotlinOpenStreetMap, Layer> = object : ReadOnlyProperty<DefaultKotlinOpenStreetMap, Layer> {
+        var layer: MarkerLayer? = null
+
         override fun getValue(thisRef: DefaultKotlinOpenStreetMap, property: KProperty<*>): Layer {
-            val layer = MarkerLayer(tiledMap)
-            addLayer(layer, order)
-            return layer
+            if (layer == null) {
+                layer = MarkerLayer(tiledMap)
+                addLayer(layer!!, order)
+            }
+            return layer as Layer
         }
     }
 }

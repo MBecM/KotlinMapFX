@@ -15,14 +15,19 @@ import kotlinmapfx.layer.TestMarker
 class Main : Application() {
 
     val map = MyMap()
+    val marker = TestMarker(LatLon(54.5745, 18.3908), "")
 
     override fun start(primaryStage: Stage?) {
         primaryStage?.apply {
             scene = Scene(map.getView(), 500.0, 500.0)
             show()
-            map.setCoordinateConsumer(MouseButton.SECONDARY) { System.err.println("Latlon:  $it") }
+            map.setCoordinateConsumer(MouseButton.SECONDARY) {
+                System.err.println("Latlon:  $it")
+                map.markerLayer.removeMarker(marker)
+            }
             map.center(LatLon(54.5745, 18.3908), 16)
-            map.markerLayer.addMarker(TestMarker(LatLon(54.5745, 18.3908), ""))
+            map.markerLayer.addMarker(marker)
+            map.markerLayer
         }
     }
 }
