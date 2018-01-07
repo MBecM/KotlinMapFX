@@ -1,8 +1,7 @@
 package kotlinmapfx.layer
 
-import kotlinmapfx.layer.tile.TiledMap
 import javafx.scene.Group
-import kotlinmapfx.layer.tile.CoordinateConverter
+import kotlinmapfx.component.Marker
 
 /**
  * @author Mateusz Becker

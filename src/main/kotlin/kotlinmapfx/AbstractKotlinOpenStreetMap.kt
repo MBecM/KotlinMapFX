@@ -1,35 +1,37 @@
-package kotlinmapfx.layer
+package kotlinmapfx
 
 import kotlinmapfx.coord.LatLon
-import kotlinmapfx.layer.controller.DefaultMapController
-import kotlinmapfx.layer.controller.MapController
-import kotlinmapfx.layer.tile.DefaultTiledMap
-import kotlinmapfx.layer.tile.MapOperations
-import kotlinmapfx.layer.tile.TiledMap
+import kotlinmapfx.controller.DefaultMapController
+import kotlinmapfx.controller.MapController
+import kotlinmapfx.layer.DefaultTiledLayer
+import kotlinmapfx.layer.MapOperations
+import kotlinmapfx.layer.TiledLayer
 import javafx.scene.Parent
 import javafx.scene.control.TextField
 import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.Region
-import kotlinmapfx.layer.tile.LayeredMap
+import kotlinmapfx.layer.Layer
+import kotlinmapfx.layer.MarkerLayer
+import kotlinmapfx.layer.LayeredMap
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**
  * @author Mateusz Becker
  */
-abstract class AbstractKotlinOpenStreetMap(private val tiledMap: TiledMap = DefaultTiledMap(), val controller: MapController = DefaultMapController(tiledMap)) : Region(), KotlinOpenStreetMap, MapOperations by tiledMap, LayeredMap by tiledMap {
+abstract class AbstractKotlinOpenStreetMap(private val tiledLayer: TiledLayer = DefaultTiledLayer(), val controller: MapController = DefaultMapController(tiledLayer)) : Region(), KotlinOpenStreetMap, MapOperations by tiledLayer, LayeredMap by tiledLayer {
 
     private var coordinateConsumer: ((LatLon) -> Unit)? = null
     private var consumerButton: MouseButton? = null
 
     init {
-        children.add(tiledMap.getView())
+        children.add(tiledLayer.getView())
         children.add(TextField("54.5745,18.3908").apply {
             translateY = 100.0
             setOnAction {
-                tiledMap.center(LatLon(this.text.substringBefore(",").toDouble(), this.text.substringAfter(",").toDouble()), 16)
+                tiledLayer.center(LatLon(this.text.substringBefore(",").toDouble(), this.text.substringAfter(",").toDouble()), 16)
             }
         })
         addEventHandler(MouseEvent.MOUSE_PRESSED, controller::mousePressed)
@@ -40,7 +42,7 @@ abstract class AbstractKotlinOpenStreetMap(private val tiledMap: TiledMap = Defa
             coordinateConsumer?.let { consumer ->
                 consumerButton?.let {
                     if (ev.button == it) {
-                        consumer.invoke(tiledMap.getCoordinate(ev.x, ev.y))
+                        consumer.invoke(tiledLayer.getCoordinate(ev.x, ev.y))
                     }
                 }
             }
@@ -67,7 +69,7 @@ abstract class AbstractKotlinOpenStreetMap(private val tiledMap: TiledMap = Defa
 
         override fun getValue(thisRef: AbstractKotlinOpenStreetMap, property: KProperty<*>): Layer {
             if (layer == null) {
-                layer = MarkerLayer(tiledMap)
+                layer = MarkerLayer(tiledLayer)
                 addLayer(layer!!)
             }
             return layer as Layer

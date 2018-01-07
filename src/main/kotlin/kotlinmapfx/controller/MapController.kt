@@ -1,7 +1,6 @@
-package kotlinmapfx.layer.controller
+package kotlinmapfx.controller
 
-import kotlinmapfx.layer.tile.MovableMap
-import kotlinmapfx.layer.tile.TiledMap
+import kotlinmapfx.layer.MovableMap
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 

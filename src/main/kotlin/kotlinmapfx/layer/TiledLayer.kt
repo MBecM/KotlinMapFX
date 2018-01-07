@@ -1,10 +1,9 @@
-package kotlinmapfx.layer.tile
+package kotlinmapfx.layer
 
 import kotlinmapfx.coord.LatLon
 import javafx.beans.property.BooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Parent
-import kotlinmapfx.layer.Layer
 
 /**
  * @author Mateusz Becker
@@ -31,7 +30,7 @@ interface LayeredMap {
     fun swapLayers(layer: Layer, layer2: Layer)
 }
 
-interface TiledMap : LayeredMap, MovableMap, MapOperations, CoordinateConverter {
+interface TiledLayer : LayeredMap, MovableMap, MapOperations, CoordinateConverter {
     val refresh: BooleanProperty
     fun getView(): Parent
 }

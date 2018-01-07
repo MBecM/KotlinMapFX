@@ -1,23 +1,19 @@
-package kotlinmapfx.layer.tile
+package kotlinmapfx.layer
 
 import kotlinmapfx.coord.LatLon
-import kotlinmapfx.layer.Layer
-import kotlinmapfx.layer.MarkerLayer
-import kotlinmapfx.layer.TestMarker
-import kotlinmapfx.layer.tile.loader.TileLoader
+import kotlinmapfx.layer.tile.TileLoader
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
-import javafx.scene.paint.Color
-import javafx.scene.shape.Circle
+import kotlinmapfx.layer.tile.Tile
 import kotlin.math.*
 
 /**
  * @author Mateusz Becker
  */
-class DefaultTiledMap : Group(), TiledMap {
+class DefaultTiledLayer : Group(), TiledLayer {
 
     val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
     val pos = LatLon(54.5745, 18.3908)

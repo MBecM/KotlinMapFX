@@ -1,10 +1,10 @@
-package kotlinmapfx.layer
+package kotlinmapfx
 
 import kotlinmapfx.coord.LatLon
-import kotlinmapfx.layer.tile.MapOperations
+import kotlinmapfx.layer.MapOperations
 import javafx.scene.Parent
 import javafx.scene.input.MouseButton
-import kotlinmapfx.layer.tile.LayeredMap
+import kotlinmapfx.layer.LayeredMap
 
 /**
  * @author Mateusz Becker

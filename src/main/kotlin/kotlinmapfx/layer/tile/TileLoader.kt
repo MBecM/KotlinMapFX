@@ -1,4 +1,4 @@
-package kotlinmapfx.layer.tile.loader
+package kotlinmapfx.layer.tile
 
 import kotlinmapfx.OSM_CACHE
 import kotlinmapfx.OSM_TILE_URL

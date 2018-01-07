@@ -2,8 +2,8 @@ package kotlinmapfx.layer
 
 import javafx.beans.value.ChangeListener
 import javafx.scene.Group
+import kotlinmapfx.component.Marker
 import kotlinmapfx.coord.LatLon
-import kotlinmapfx.layer.tile.CoordinateConverter
 
 /**
  * @author Mateusz Becker

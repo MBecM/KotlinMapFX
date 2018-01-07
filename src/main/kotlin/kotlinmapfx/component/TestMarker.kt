@@ -1,4 +1,4 @@
-package kotlinmapfx.layer
+package kotlinmapfx.component
 
 import kotlinmapfx.coord.LatLon
 import javafx.beans.property.SimpleObjectProperty
