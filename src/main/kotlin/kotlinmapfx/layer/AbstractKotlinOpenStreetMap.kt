@@ -19,7 +19,7 @@ import kotlin.reflect.KProperty
 /**
  * @author Mateusz Becker
  */
-abstract class DefaultKotlinOpenStreetMap(private val tiledMap: TiledMap = DefaultTiledMap(), val controller: MapController = DefaultMapController(tiledMap)) : Region(), KotlinOpenStreetMap, MapOperations by tiledMap, LayeredMap by tiledMap {
+abstract class AbstractKotlinOpenStreetMap(private val tiledMap: TiledMap = DefaultTiledMap(), val controller: MapController = DefaultMapController(tiledMap)) : Region(), KotlinOpenStreetMap, MapOperations by tiledMap, LayeredMap by tiledMap {
 
     private var coordinateConsumer: ((LatLon) -> Unit)? = null
     private var consumerButton: MouseButton? = null
@@ -62,10 +62,10 @@ abstract class DefaultKotlinOpenStreetMap(private val tiledMap: TiledMap = Defau
         return this
     }
 
-    protected fun layer(): ReadOnlyProperty<DefaultKotlinOpenStreetMap, Layer> = object : ReadOnlyProperty<DefaultKotlinOpenStreetMap, Layer> {
+    protected fun layer(): ReadOnlyProperty<AbstractKotlinOpenStreetMap, Layer> = object : ReadOnlyProperty<AbstractKotlinOpenStreetMap, Layer> {
         var layer: MarkerLayer? = null
 
-        override fun getValue(thisRef: DefaultKotlinOpenStreetMap, property: KProperty<*>): Layer {
+        override fun getValue(thisRef: AbstractKotlinOpenStreetMap, property: KProperty<*>): Layer {
             if (layer == null) {
                 layer = MarkerLayer(tiledMap)
                 addLayer(layer!!)

@@ -1,13 +1,12 @@
 package kotlinmapfx.main
 
 import kotlinmapfx.coord.LatLon
-import kotlinmapfx.layer.DefaultKotlinOpenStreetMap
+import kotlinmapfx.layer.AbstractKotlinOpenStreetMap
 import kotlinmapfx.layer.Layer
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.input.MouseButton
 import javafx.stage.Stage
-import kotlinmapfx.layer.MarkerLayer
 import kotlinmapfx.layer.TestMarker
 
 /**
@@ -34,7 +33,7 @@ class Main : Application() {
     }
 }
 
-class MyMap() : DefaultKotlinOpenStreetMap() {
+class MyMap() : AbstractKotlinOpenStreetMap() {
     val markerLayer: Layer by layer()
 }
 
