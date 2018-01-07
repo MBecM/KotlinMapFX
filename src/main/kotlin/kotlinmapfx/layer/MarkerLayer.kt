@@ -1,24 +1,24 @@
 package kotlinmapfx.layer
 
-import kotlinmapfx.coord.LatLon
-import kotlinmapfx.layer.tile.TiledMap
 import javafx.beans.value.ChangeListener
 import javafx.scene.Group
+import kotlinmapfx.coord.LatLon
+import kotlinmapfx.layer.tile.CoordinateConverter
 
 /**
  * @author Mateusz Becker
  */
-class MarkerLayer(override val tiledMap: TiledMap) : Group(), Layer {
+class MarkerLayer(override val coordinateConverter : CoordinateConverter) : Group(), Layer {
 
-    val markers = mutableListOf<Marker>()
-    val listeners = mutableMapOf<Marker, ChangeListener<LatLon>>()
+    private val markers = mutableListOf<Marker>()
+    private val listeners = mutableMapOf<Marker, ChangeListener<LatLon>>()
 
     override fun addMarker(marker: Marker) {
         markers += marker
         children += marker.getView()
         refreshMarker(marker)
 
-        val listener = ChangeListener<LatLon> { _, _, coord ->
+        val listener = ChangeListener<LatLon> { _, _, _ ->
             refreshMarker(marker)
         }
         marker.coordinateProperty.addListener(listener)
@@ -38,12 +38,12 @@ class MarkerLayer(override val tiledMap: TiledMap) : Group(), Layer {
     }
 
     private fun refreshMarker(marker: Marker) {
-        val localCoordinate = tiledMap.getLocalCoordinate(marker.coordinate)
+        val localCoordinate = coordinateConverter.getLocalCoordinate(marker.coordinate)
         marker.getView().translateX = localCoordinate.x + marker.getCorrection().x
         marker.getView().translateY = localCoordinate.y + marker.getCorrection().y
     }
 
     override fun getView(): Group {
-        return this;
+        return this
     }
 }

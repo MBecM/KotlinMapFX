@@ -2,12 +2,13 @@ package kotlinmapfx.layer
 
 import kotlinmapfx.layer.tile.TiledMap
 import javafx.scene.Group
+import kotlinmapfx.layer.tile.CoordinateConverter
 
 /**
  * @author Mateusz Becker
  */
 interface Layer {
-    val tiledMap : TiledMap
+    val coordinateConverter : CoordinateConverter
     fun getView():Group
     fun refresh()
 
