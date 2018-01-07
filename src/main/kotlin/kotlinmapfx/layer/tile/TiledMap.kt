@@ -26,10 +26,9 @@ interface MapOperations {
 }
 
 interface LayeredMap {
-    fun addLayer(layer: Layer, order: Double = 0.0)
+    fun addLayer(layer: Layer)
     fun removeLayer(layer: Layer)
-    fun removeLayer(order: Double)
-    fun reorderLayer(oldOrder: Double, newOrder: Double)
+    fun swapLayers(layer: Layer, layer2: Layer)
 }
 
 interface TiledMap : LayeredMap, MovableMap, MapOperations, CoordinateConverter {

@@ -7,6 +7,7 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.input.MouseButton
 import javafx.stage.Stage
+import kotlinmapfx.layer.MarkerLayer
 import kotlinmapfx.layer.TestMarker
 
 /**
@@ -23,7 +24,8 @@ class Main : Application() {
             show()
             map.setCoordinateConsumer(MouseButton.SECONDARY) {
                 System.err.println("Latlon:  $it")
-                map.markerLayer.removeMarker(marker)
+//                map.markerLayer.removeMarker(marker)
+                map.removeLayer(map.markerLayer)
             }
             map.center(LatLon(54.5745, 18.3908), 16)
             map.markerLayer.addMarker(marker)

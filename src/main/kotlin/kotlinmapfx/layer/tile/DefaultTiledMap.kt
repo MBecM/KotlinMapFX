@@ -31,6 +31,7 @@ class DefaultTiledMap : Group(), TiledMap {
     private var minY = -100L
     private var maxY = -100L
 
+    private val defaultLayersAmount = 1
     private val tilesLayer = Group()
     private val layers = mutableListOf<Layer>()
 
@@ -53,9 +54,7 @@ class DefaultTiledMap : Group(), TiledMap {
 
     init {
         children += tilesLayer
-//        children.addAll(layers.map { it.getView() })
         loadTiles()
-//        layers[0].addMarker(TestMarker(pos, ""))
     }
 
     override fun center(coord: LatLon, zoom: Int) {
@@ -218,20 +217,17 @@ class DefaultTiledMap : Group(), TiledMap {
         tilesLayer.children.remove(tile)
     }
 
-    override fun addLayer(layer: Layer, order: Double) {
+    override fun addLayer(layer: Layer) {
         layers += layer
         children += layer.getView()
     }
 
     override fun removeLayer(layer: Layer) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        layers -= layer
+        children -= layer.getView()
     }
 
-    override fun removeLayer(order: Double) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun reorderLayer(oldOrder: Double, newOrder: Double) {
+    override fun swapLayers(layer: Layer, layer2: Layer) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
