@@ -2,8 +2,6 @@ package kotlinmapfx.layer
 
 import kotlinmapfx.coord.LatLon
 import kotlinmapfx.layer.tile.TileLoader
-import javafx.beans.property.BooleanProperty
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
@@ -13,10 +11,10 @@ import kotlin.math.*
 /**
  * @author Mateusz Becker
  */
-class DefaultTiledLayer : Group(), TiledLayer {
+class DefaultTiledLayeredView : Group(), TiledLayeredView {
 
     val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
-    val pos = LatLon(54.5745, 18.3908)
+
     private val overlap = 2
     private var maxXForZoom: Long = 0
     private var maxYForZoom: Long = 0
@@ -31,7 +29,6 @@ class DefaultTiledLayer : Group(), TiledLayer {
     private val tilesLayer = Group()
     private val layers = mutableListOf<Layer>()
 
-    override val refresh: BooleanProperty = SimpleBooleanProperty(false)
     override var zoom: Int = 3
         set(value) {
             if (field != value) {
@@ -94,7 +91,6 @@ class DefaultTiledLayer : Group(), TiledLayer {
     }
 
     fun loadTiles() {
-        refresh.set(true)
         val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
         val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
         val newMinX = max(0L, abs(-translateX / 256).toLong() - overlap)
@@ -196,8 +192,6 @@ class DefaultTiledLayer : Group(), TiledLayer {
             minY = newMinY
             maxY = newMaxY
         }
-
-        refresh.set(false)
     }
 
     private fun addTile(x: Long, y: Long) {

@@ -30,7 +30,6 @@ interface LayeredMap {
     fun swapLayers(layer: Layer, layer2: Layer)
 }
 
-interface TiledLayer : LayeredMap, MovableMap, MapOperations, CoordinateConverter {
-    val refresh: BooleanProperty
+interface TiledLayeredView : LayeredMap, MovableMap, MapOperations, CoordinateConverter {
     fun getView(): Parent
 }

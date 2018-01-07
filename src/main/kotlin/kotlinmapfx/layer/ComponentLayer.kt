@@ -8,7 +8,7 @@ import kotlinmapfx.coord.LatLon
 /**
  * @author Mateusz Becker
  */
-class MarkerLayer(override val coordinateConverter : CoordinateConverter) : Group(), Layer {
+class ComponentLayer(override val coordinateConverter : CoordinateConverter) : Group(), Layer {
 
     private val markers = mutableListOf<Marker>()
     private val listeners = mutableMapOf<Marker, ChangeListener<LatLon>>()
