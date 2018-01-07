@@ -3,6 +3,8 @@ package kotlinmapfx.layer
 import javafx.beans.value.ChangeListener
 import javafx.scene.Group
 import kotlinmapfx.component.Marker
+import kotlinmapfx.component.Route
+import kotlinmapfx.component.Shape
 import kotlinmapfx.coord.LatLon
 
 /**
@@ -31,6 +33,22 @@ class ComponentLayer(override val coordinateConverter : CoordinateConverter) : G
         listeners.remove(marker).let {
             marker.coordinateProperty.removeListener(it)
         }
+    }
+
+    override fun addShape(shape: Shape) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun removeShape(shape: Shape) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addRoute(route: Route) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun removeRoute(route: Route) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun refresh() {
