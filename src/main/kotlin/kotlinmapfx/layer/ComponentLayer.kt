@@ -10,10 +10,12 @@ import kotlinmapfx.coord.LatLon
 /**
  * @author Mateusz Becker
  */
-class ComponentLayer(override val coordinateConverter : CoordinateConverter) : Group(), Layer {
+class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Group(), Layer {
 
     private val markers = mutableListOf<Marker>()
     private val listeners = mutableMapOf<Marker, ChangeListener<LatLon>>()
+
+    private val shapes = mutableListOf<Shape>()
 
     override fun addMarker(marker: Marker) {
         markers += marker
@@ -36,8 +38,11 @@ class ComponentLayer(override val coordinateConverter : CoordinateConverter) : G
     }
 
     override fun addShape(shape: Shape) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        children += shape.shape
+        shapes += shape
+        shape.markers.forEach { refreshMarker(it) }
     }
+
 
     override fun removeShape(shape: Shape) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -53,10 +58,17 @@ class ComponentLayer(override val coordinateConverter : CoordinateConverter) : G
 
     override fun refresh() {
         markers.forEach { this.refreshMarker(it) }
+        shapes.forEach { this.refreshShape(it) }
     }
 
     private fun refreshMarker(marker: Marker) {
         marker.refresh(coordinateConverter.getLocalCoordinate(marker.coordinate))
+    }
+
+    private fun refreshShape(shape: Shape) {
+        shape.markers.forEach {
+            refreshMarker(it)
+        }
     }
 
     override fun getView(): Group {

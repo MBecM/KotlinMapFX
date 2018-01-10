@@ -7,6 +7,8 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.input.MouseButton
 import javafx.stage.Stage
+import kotlinmapfx.component.AbstractShape
+import kotlinmapfx.component.Marker
 import kotlinmapfx.component.TestMarker
 
 /**
@@ -15,7 +17,7 @@ import kotlinmapfx.component.TestMarker
 class Main : Application() {
 
     val map = MyMap()
-    val marker = TestMarker(LatLon(54.5745, 18.3908), "")
+    val marker : Marker = TestMarker(LatLon(54.5745, 18.3908), "")
 
     override fun start(primaryStage: Stage?) {
         primaryStage?.apply {
@@ -28,8 +30,10 @@ class Main : Application() {
 //                map.removeLayer(map.markerLayer)
             }
             map.center(LatLon(54.5745, 18.3908), 16)
-            map.markerLayer.addMarker(marker)
-            map.markerLayer
+//            map.markerLayer.addMarker(marker)
+            val shape = AbstractShape()
+            shape.markers.add(marker)
+            map.markerLayer.addShape(shape)
         }
     }
 }
