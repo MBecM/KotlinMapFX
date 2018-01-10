@@ -23,8 +23,9 @@ class TestMarker(coord: LatLon, text: String) : Button(text), Marker {
 
     override val coordinateProperty: SimpleObjectProperty<LatLon> = SimpleObjectProperty(coord)
 
-    override fun getCorrection(): Point2D {
-        return Point2D(-this.width / 2, -this.height)
+    override fun refresh(localCoordinate: Point2D) {
+        translateX = localCoordinate.x - this.width / 2
+        translateY = localCoordinate.y - this.height
     }
 
     override fun getView(): Node {

@@ -56,9 +56,7 @@ class ComponentLayer(override val coordinateConverter : CoordinateConverter) : G
     }
 
     private fun refreshMarker(marker: Marker) {
-        val localCoordinate = coordinateConverter.getLocalCoordinate(marker.coordinate)
-        marker.getView().translateX = localCoordinate.x + marker.getCorrection().x
-        marker.getView().translateY = localCoordinate.y + marker.getCorrection().y
+        marker.refresh(coordinateConverter.getLocalCoordinate(marker.coordinate))
     }
 
     override fun getView(): Group {

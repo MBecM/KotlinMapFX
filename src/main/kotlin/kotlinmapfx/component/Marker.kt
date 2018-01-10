@@ -14,6 +14,6 @@ interface Marker {
         get() = coordinateProperty.get()
         set(value) = coordinateProperty.set(value)
 
-    fun getCorrection() : Point2D
+    fun refresh(localCoordinate: Point2D)
     fun getView(): Node
 }
