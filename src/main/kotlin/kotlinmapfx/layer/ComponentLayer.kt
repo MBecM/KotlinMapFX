@@ -38,9 +38,9 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
     }
 
     override fun addShape(shape: Shape) {
-        children += shape.shape
+        children += shape.getView()
         shapes += shape
-        shape.markers.forEach { refreshMarker(it) }
+        shape.anchors.forEach { refreshMarker(it) }
     }
 
 
@@ -66,7 +66,7 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
     }
 
     private fun refreshShape(shape: Shape) {
-        shape.markers.forEach {
+        shape.anchors.forEach {
             refreshMarker(it)
         }
     }
