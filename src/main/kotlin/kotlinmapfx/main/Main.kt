@@ -27,7 +27,7 @@ class Main : Application() {
                 marker.coordinate = it
 ////                map.markerLayer.removeMarker(marker)
 //                map.removeLayer(map.markerLayer)
-                shape.closeable = !shape.closeable
+                shape.editable = !shape.editable
                 shape.color = if (shape.color == Color.BLACK) Color.GREEN else Color.BLACK
                 shape.colorOpacity = 0.5
             }
