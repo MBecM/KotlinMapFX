@@ -7,11 +7,11 @@ import kotlinmapfx.layer.DefaultTiledLayeredView
 import kotlinmapfx.layer.MapOperations
 import kotlinmapfx.layer.TiledLayeredView
 import javafx.scene.Parent
-import javafx.scene.control.TextField
 import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.Region
+import javafx.scene.shape.Rectangle
 import kotlinmapfx.layer.Layer
 import kotlinmapfx.layer.ComponentLayer
 import kotlinmapfx.layer.LayeredMap
@@ -25,15 +25,11 @@ abstract class AbstractKotlinOpenStreetMap(private val tiledLayeredView: TiledLa
 
     private var coordinateConsumer: ((LatLon) -> Unit)? = null
     private var consumerButton: MouseButton? = null
+    private val mapClip = Rectangle(200.0, 200.0)
 
     init {
+        clip = mapClip
         children.add(tiledLayeredView.getView())
-        children.add(TextField("54.5745,18.3908").apply {
-            translateY = 100.0
-            setOnAction {
-                tiledLayeredView.center(LatLon(this.text.substringBefore(",").toDouble(), this.text.substringAfter(",").toDouble()), 16)
-            }
-        })
         addEventHandler(MouseEvent.MOUSE_PRESSED, controller::mousePressed)
         addEventHandler(MouseEvent.MOUSE_DRAGGED, controller::mouseDragged)
         addEventHandler(ScrollEvent.SCROLL, controller::scroll)
@@ -48,6 +44,10 @@ abstract class AbstractKotlinOpenStreetMap(private val tiledLayeredView: TiledLa
             }
         })
 
+        layoutBoundsProperty().addListener { _, _, bounds ->
+            mapClip.width = bounds.width
+            mapClip.height = bounds.height
+        }
     }
 
     override fun setCoordinateConsumer(consumerButton: MouseButton, consumer: (LatLon) -> Unit) {

@@ -5,7 +5,11 @@ import kotlinmapfx.AbstractKotlinOpenStreetMap
 import kotlinmapfx.layer.Layer
 import javafx.application.Application
 import javafx.scene.Scene
+import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.control.TextField
 import javafx.scene.input.MouseButton
+import javafx.scene.layout.BorderPane
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import kotlinmapfx.component.*
@@ -20,7 +24,18 @@ class Main : Application() {
     val shape = PolygonShape()
     override fun start(primaryStage: Stage?) {
         primaryStage?.apply {
-            scene = Scene(map.getView(), 800.0, 700.0)
+
+            val root = BorderPane()
+            root.top = Label("Title: KotlinMapFX")
+            root.center = map.getView()
+            root.left = TextField("54.5745,18.3908").apply {
+                setOnAction {
+                    map.center(LatLon(this.text.substringBefore(",").toDouble(), this.text.substringAfter(",").toDouble()), 16)
+                }
+            }
+            root.bottom = Label("Status: ONLINE")
+            root.right = Button("Button on right")
+            scene = Scene(root, 800.0, 700.0)
             show()
             map.setCoordinateConsumer(MouseButton.SECONDARY) {
                 System.err.println("Latlon:  $it")
