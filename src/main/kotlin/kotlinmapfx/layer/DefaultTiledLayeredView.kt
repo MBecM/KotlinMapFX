@@ -6,8 +6,10 @@ import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
 import kotlinmapfx.layer.tile.Tile
+import mu.KotlinLogging
 import kotlin.math.*
 
+private val log = KotlinLogging.logger {  }
 /**
  * @author Mateusz Becker
  */
@@ -33,7 +35,7 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
         set(value) {
             if (field != value) {
                 field = value
-                System.err.println("zoom: $value")
+                log.debug("Current zoom: $value")
                 tilesLayer.children.clear()
                 layers.forEach { it.refresh() }
                 minX = -100
@@ -99,24 +101,24 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
         val newMaxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
 
         if (newMinX != minX || newMinY != minY || newMaxX != maxX || newMaxY != maxY) {
-            System.err.println("===========================================")
-            System.err.println("minX: $minX, maxX: $maxX")
-            System.err.println("minY: $minY, maxY: $maxY")
-            System.err.println("newMinX: $newMinX, newMaxX: $newMaxX")
-            System.err.println("newMinY: $newMinY, newMaxY: $newMaxY")
+            log.trace("===========================================")
+            log.trace("minX: $minX, maxX: $maxX")
+            log.trace("minY: $minY, maxY: $maxY")
+            log.trace("newMinX: $newMinX, newMaxX: $newMaxX")
+            log.trace("newMinY: $newMinY, newMaxY: $newMaxY")
 
             if (maxX < newMinX || newMaxX < minX || maxY < newMinY || newMaxY < minY) {
 
                 for (x in minX..maxX) {
                     for (y in minY..maxY) {
                         removeTile(x, y)
-                        System.err.println("REMOVE CLEAR: $x , $y")
+                        log.trace("REMOVE CLEAR: $x , $y")
                     }
                 }
                 for (x in newMinX..newMaxX) {
                     for (y in newMinY..newMaxY) {
                         addTile(x, y)
-                        System.err.println("ADD CLEAR: $x , $y")
+                        log.trace("ADD CLEAR: $x , $y")
                     }
                 }
             } else {
@@ -125,13 +127,13 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
                 for (x in minX..newMinX - 1) {
                     for (y in min(minY, newMinY)..max(maxY, newMaxY)) {
                         removeTile(x, y)
-                        System.err.println("REMOVE x: $x , $y")
+                        log.trace("REMOVE x: $x , $y")
                     }
                 }
                 for (x in newMaxX + 1..maxX) {
                     for (y in min(minY, newMinY)..max(maxY, newMaxY)) {
                         removeTile(x, y)
-                        System.err.println("REMOVE x2: $x , $y")
+                        log.trace("REMOVE x2: $x , $y")
                     }
                 }
 
@@ -139,13 +141,13 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
                 for (x in min(minX, newMinX)..max(maxX, newMaxX)) {
                     for (y in minY..newMinY - 1) {
                         removeTile(x, y)
-                        System.err.println("REMOVE y: $x , $y")
+                        log.trace("REMOVE y: $x , $y")
                     }
                 }
                 for (x in min(minX, newMinX)..max(maxX, newMaxX)) {
                     for (y in newMaxY + 1..maxY) {
                         removeTile(x, y)
-                        System.err.println("REMOVE y2: $x , $y")
+                        log.trace("REMOVE y2: $x , $y")
                     }
                 }
 
@@ -153,13 +155,13 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
                 for (x in maxX + 1..newMaxX) {
                     for (y in newMinY..newMaxY) {
                         addTile(x, y)
-                        System.err.println("ADD x: $x , $y")
+                        log.trace("ADD x: $x , $y")
                     }
                 }
                 for (x in newMinX..minX - 1) {
                     for (y in newMinY..newMaxY) {
                         addTile(x, y)
-                        System.err.println("ADD x2: $x , $y")
+                        log.trace("ADD x2: $x , $y")
                     }
                 }
                 var deltaMinX = 0L
@@ -176,14 +178,14 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
                 for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
                     for (y in maxY + 1..newMaxY) {
                         addTile(x, y)
-                        System.err.println("ADD y: $x , $y")
+                        log.trace("ADD y: $x , $y")
                     }
                 }
                 //add y - top
                 for (x in newMinX + deltaMinX..newMaxX + deltaMaxX) {
                     for (y in newMinY..minY - 1) {
                         addTile(x, y)
-                        System.err.println("ADD y2: $x , $y")
+                        log.trace("ADD y2: $x , $y")
                     }
                 }
             }

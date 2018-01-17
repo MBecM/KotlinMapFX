@@ -13,6 +13,9 @@ import javafx.scene.layout.BorderPane
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import kotlinmapfx.component.*
+import mu.KotlinLogging
+
+private val log = KotlinLogging.logger {  }
 
 /**
  * @author Mateusz Becker
@@ -38,7 +41,7 @@ class Main : Application() {
             scene = Scene(root, 800.0, 700.0)
             show()
             map.setCoordinateConsumer(MouseButton.SECONDARY) {
-                System.err.println("Latlon:  $it")
+                log.debug("Latlon:  $it")
                 marker.coordinate = it
 ////                map.markerLayer.removeMarker(marker)
 //                map.removeLayer(map.markerLayer)
