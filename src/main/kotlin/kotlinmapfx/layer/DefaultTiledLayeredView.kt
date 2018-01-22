@@ -19,8 +19,7 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
     val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
 
     private val overlap = 2
-    private var maxXForZoom: Long = 0
-    private var maxYForZoom: Long = 0
+    private var maxXYForZoom: Long = 0
     private val tileLoader: TileLoader = TileLoader()
 
     private var minX = -100L
@@ -36,6 +35,7 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
         set(value) {
             if (field != value) {
                 field = value
+                maxXYForZoom = 1L shl field
                 log.debug("Current zoom: $value")
                 tilesLayer.children.clear()
                 layers.forEach { it.refresh() }
@@ -44,8 +44,6 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
                 minY = -100
                 maxY = -100
             }
-            maxXForZoom = 1L shl zoom
-            maxYForZoom = 1L shl zoom
         }
 
     private var _center: LatLon? = null
@@ -82,17 +80,16 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
     }
 
     override fun getLocalCoordinate(coord: LatLon): Point2D {
-        var x = (coord.lon + 180) * (1 shl zoom) / 360.0
-        var y = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / PI) * (1 shl zoom - 1)
+        val x = (coord.lon + 180) * maxXYForZoom / 360.0
+        val y = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / PI) * (1 shl zoom - 1)
         return Point2D(x * 256, y * 256)
     }
 
     override fun getCoordinate(x: Double, y: Double): LatLon {
-        val n = 1 shl zoom
         val tx = (translateX - x) / -256.0
         val ty = (translateY - y) / -256.0
-        val lat = Math.toDegrees(atan(sinh(PI - (ty * 2 * PI) / n)))
-        val lon = (tx * 360 / n) - 180
+        val lat = Math.toDegrees(atan(sinh(PI - (ty * 2 * PI) / maxXYForZoom)))
+        val lon = (tx * 360 / maxXYForZoom) - 180
         return LatLon(lat, lon)
     }
 
@@ -102,13 +99,13 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
         loadTiles()
     }
 
-    fun loadTiles() {
+    private fun loadTiles() {
         val width: Double = parent?.layoutBounds?.width ?: 0.0
         val height: Double = parent?.layoutBounds?.height ?: 0.0
         val newMinX = max(0L, abs(-translateX / 256).toLong() - overlap)
-        val newMaxX = min(maxXForZoom, abs((-translateX + width) / 256).toLong() + overlap)
+        val newMaxX = min(maxXYForZoom, abs((-translateX + width) / 256).toLong() + overlap)
         val newMinY = max(0L, abs(-translateY / 256).toLong() - overlap)
-        val newMaxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
+        val newMaxY = min(maxXYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
 
         _center = getCoordinate(width / 2, height / 2)
 
