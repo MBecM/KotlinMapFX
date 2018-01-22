@@ -23,7 +23,7 @@ private val log = KotlinLogging.logger {  }
 class Main : Application() {
 
     val map = MyMap()
-    val marker: Marker = TestMarker(LatLon(54.5745, 18.3908), "")
+    val marker: Marker = TestMarker(LatLon(54.574534565, 18.3908765443), "")
     val shape = PolygonShape()
     override fun start(primaryStage: Stage?) {
         primaryStage?.apply {
@@ -31,14 +31,14 @@ class Main : Application() {
             val root = BorderPane()
             root.top = Label("Title: KotlinMapFX")
             root.center = map.getView()
-            root.left = TextField("54.5745,18.3908").apply {
+            root.left = TextField("54.574534565, 18.3908765443").apply {
                 setOnAction {
                     map.center(LatLon(this.text.substringBefore(",").toDouble(), this.text.substringAfter(",").toDouble()), 16)
                 }
             }
             root.bottom = Label("Status: ONLINE")
             root.right = Button("Button on right")
-            scene = Scene(root, 800.0, 700.0)
+            scene = Scene(root, 900.0, 600.0)
             show()
             map.setCoordinateConsumer(MouseButton.SECONDARY) {
                 log.debug("Latlon:  $it")
@@ -49,7 +49,7 @@ class Main : Application() {
                 shape.color = if (shape.color == Color.BLACK) Color.GREEN else Color.BLACK
                 shape.colorOpacity = 0.5
             }
-            map.center(LatLon(54.5745, 18.3908), 16)
+            map.center(LatLon(54.574534565, 18.3908765443), 16)
 
             shape.setPositions(listOf(LatLon(54.5745, 18.3908), LatLon(54.6745, 18.2908), LatLon(54.7745, 18.5908)))
             map.markerLayer.addShape(shape)

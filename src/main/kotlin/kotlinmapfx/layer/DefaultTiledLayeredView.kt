@@ -9,7 +9,8 @@ import kotlinmapfx.layer.tile.Tile
 import mu.KotlinLogging
 import kotlin.math.*
 
-private val log = KotlinLogging.logger {  }
+private val log = KotlinLogging.logger { }
+
 /**
  * @author Mateusz Becker
  */
@@ -47,6 +48,15 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
             maxYForZoom = 1L shl zoom
         }
 
+    private var _center: LatLon? = null
+    override val center: LatLon
+        get() {
+            if (_center == null) {
+                _center = LatLon(0.0, 0.0)
+            }
+            return _center ?: throw AssertionError("Center coordinate cannot be null")
+        }
+
     init {
         children += tilesLayer
         loadTiles()
@@ -55,8 +65,8 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
     override fun center(coord: LatLon, zoom: Int) {
         this.zoom = zoom
         val localPoint = getLocalCoordinate(coord)
-        val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
-        val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
+        val width: Double = parent?.layoutBounds?.width ?: 0.0
+        val height: Double = parent?.layoutBounds?.height ?: 0.0
         translateX = -localPoint.x + (width / 2)
         translateY = -localPoint.y + (height / 2)
         loadTiles()
@@ -93,12 +103,14 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
     }
 
     fun loadTiles() {
-        val width: Int = parent?.layoutBounds?.width?.toInt() ?: 0
-        val height: Int = parent?.layoutBounds?.height?.toInt() ?: 0
+        val width: Double = parent?.layoutBounds?.width ?: 0.0
+        val height: Double = parent?.layoutBounds?.height ?: 0.0
         val newMinX = max(0L, abs(-translateX / 256).toLong() - overlap)
         val newMaxX = min(maxXForZoom, abs((-translateX + width) / 256).toLong() + overlap)
         val newMinY = max(0L, abs(-translateY / 256).toLong() - overlap)
         val newMaxY = min(maxYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
+
+        _center = getCoordinate(width / 2, height / 2)
 
         if (newMinX != minX || newMinY != minY || newMaxX != maxX || newMaxY != maxY) {
             log.trace("===========================================")

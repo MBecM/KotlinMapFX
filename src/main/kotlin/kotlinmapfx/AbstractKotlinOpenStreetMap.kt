@@ -15,9 +15,11 @@ import javafx.scene.shape.Rectangle
 import kotlinmapfx.layer.Layer
 import kotlinmapfx.layer.ComponentLayer
 import kotlinmapfx.layer.LayeredMap
+import mu.KotlinLogging
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
+private val log = KotlinLogging.logger {  }
 /**
  * @author Mateusz Becker
  */
@@ -45,6 +47,7 @@ abstract class AbstractKotlinOpenStreetMap(private val tiledLayeredView: TiledLa
         })
 
         layoutBoundsProperty().addListener { _, _, bounds ->
+            center(center)
             mapClip.width = bounds.width
             mapClip.height = bounds.height
         }
