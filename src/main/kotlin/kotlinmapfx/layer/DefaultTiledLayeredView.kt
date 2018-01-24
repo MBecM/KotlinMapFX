@@ -5,7 +5,10 @@ import kotlinmapfx.layer.tile.TileLoader
 import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
+import kotlinmapfx.OSM_TILE_URL
 import kotlinmapfx.layer.tile.Tile
+import kotlinmapfx.layer.tile.TileType
+import kotlinmapfx.layer.tile.TilesProvider
 import mu.KotlinLogging
 import kotlin.math.*
 
@@ -14,13 +17,14 @@ private val log = KotlinLogging.logger { }
 /**
  * @author Mateusz Becker
  */
-class DefaultTiledLayeredView : Group(), TiledLayeredView {
+class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group(), TiledLayeredView {
 
-    val tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
+    private var tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
 
     private val overlap = 2
     private var maxXYForZoom: Long = 0
-    private val tileLoader: TileLoader = TileLoader()
+    private val tileLoader: TileLoader
+
 
     private var minX = -100L
     private var maxX = -100L
@@ -56,6 +60,16 @@ class DefaultTiledLayeredView : Group(), TiledLayeredView {
         }
 
     init {
+        tileLoader = TileLoader(tilesProvider)
+        tilesProvider.selectedTileTypeProperty.addListener { _, _, selectedTileType ->
+            tilesLayer.children.clear()
+            tiles = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
+            minX = -100
+            maxX = -100
+            minY = -100
+            maxY = -100
+            loadTiles()
+        }
         children += tilesLayer
         loadTiles()
     }

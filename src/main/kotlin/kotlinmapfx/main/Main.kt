@@ -4,25 +4,31 @@ import kotlinmapfx.coord.LatLon
 import kotlinmapfx.AbstractKotlinOpenStreetMap
 import kotlinmapfx.layer.Layer
 import javafx.application.Application
+import javafx.collections.FXCollections
 import javafx.scene.Scene
 import javafx.scene.control.Button
+import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.BorderPane
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.stage.Stage
+import kotlinmapfx.OSM_TILE_URL
 import kotlinmapfx.component.*
+import kotlinmapfx.layer.tile.TileType
+import kotlinmapfx.layer.tile.TilesProvider
 import mu.KotlinLogging
 
-private val log = KotlinLogging.logger {  }
+private val log = KotlinLogging.logger { }
 
 /**
  * @author Mateusz Becker
  */
 class Main : Application() {
 
-    val map = MyMap()
+    val map: MyMap
     val marker: Marker = TestMarker(LatLon(54.574534565, 18.3908765443), "")
     val shape = PolygonShape()
     override fun start(primaryStage: Stage?) {
@@ -37,7 +43,16 @@ class Main : Application() {
                 }
             }
             root.bottom = Label("Status: ONLINE")
-            root.right = Button("Button on right")
+            root.right = VBox(Button("Button on right").apply {
+                setOnAction {
+                    map.tilesProvider.selectedTileType = map.tilesProvider.servers[0]
+                }
+            }, ComboBox<TileType>(FXCollections.observableArrayList(map.tilesProvider.servers)).apply {
+                value = map.tilesProvider.selectedTileType
+                setOnAction {
+                    map.tilesProvider.selectedTileType = this.value
+                }
+            })
             scene = Scene(root, 900.0, 600.0)
             show()
             map.setCoordinateConsumer(MouseButton.SECONDARY) {
@@ -56,9 +71,18 @@ class Main : Application() {
             map.markerLayer.addMarker(marker)
         }
     }
+
+    init {
+        val defaultType = TileType(OSM_TILE_URL, "OpenStreetMap")
+        val stamenWatercolorType = TileType("http://c.tile.stamen.com/watercolor/", "StamenWatercolor")
+        val stamenTonerType = TileType("http://a.tile.stamen.com/toner/", "StamenToner")
+        val transportType = TileType("http://a.tile2.opencyclemap.org/transport/", "Transport")
+        val wikimediaType = TileType("https://maps.wikimedia.org/osm-intl/", "Wikimedia")
+        map = MyMap(TilesProvider(defaultType, listOf(defaultType, stamenTonerType, stamenWatercolorType, transportType, wikimediaType)))
+    }
 }
 
-class MyMap() : AbstractKotlinOpenStreetMap() {
+class MyMap(override val tilesProvider: TilesProvider) : AbstractKotlinOpenStreetMap(tilesProvider) {
     val markerLayer: Layer by layer()
 }
 

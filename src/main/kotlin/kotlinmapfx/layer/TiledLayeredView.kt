@@ -4,6 +4,7 @@ import kotlinmapfx.coord.LatLon
 import javafx.beans.property.BooleanProperty
 import javafx.geometry.Point2D
 import javafx.scene.Parent
+import kotlinmapfx.layer.tile.TilesProvider
 
 /**
  * @author Mateusz Becker
@@ -26,6 +27,7 @@ interface MapOperations {
 }
 
 interface LayeredMap {
+    val tilesProvider: TilesProvider
     fun addLayer(layer: Layer)
     fun removeLayer(layer: Layer)
     fun swapLayers(layer: Layer, layer2: Layer)

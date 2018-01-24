@@ -13,7 +13,7 @@ import javax.imageio.ImageIO
 /**
  * @author Mateusz Becker
  */
-class TileLoader {
+class TileLoader(val provider: TilesProvider) {
 
     val cacheDir = System.getProperty("user.home") + OSM_CACHE
 
@@ -25,16 +25,17 @@ class TileLoader {
         val imageName = y.toString() + ".png"
         val imageDir = zoom.toString() + "/" + x + "/"
 
-        val url = OSM_TILE_URL + imageDir + imageName
+        val url = provider.selectedTileType.url + imageDir + imageName
+        val cache = cacheDir + provider.selectedTileType.name + "/"
 
-        val imageFromCache = checkCache(cacheDir + imageDir + imageName)
+        val imageFromCache = checkCache(cache + imageDir + imageName)
         val image = imageFromCache ?: Image(url, true)
 
         val tile = Tile(zoom, x, y, image)
         if (imageFromCache == null) {
             image.progressProperty().addListener { _, _, progress ->
                 if (progress.toDouble() >= 1.0) {
-                    saveToCache(image, imageDir, imageName)
+                    saveToCache(image, cache, imageDir, imageName)
                 }
             }
         }
@@ -49,7 +50,7 @@ class TileLoader {
         return null;
     }
 
-    private fun saveToCache(img: Image, dir: String, fileName: String) {
+    private fun saveToCache(img: Image, cacheDir: String, dir: String, fileName: String) {
         val dirs = File(cacheDir, dir)
         val file = File(dirs, fileName)
 
