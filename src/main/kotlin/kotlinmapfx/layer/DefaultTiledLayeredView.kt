@@ -19,8 +19,6 @@ private val log = KotlinLogging.logger { }
  */
 class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group(), TiledLayeredView {
 
-    private var tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
-
     private val overlap = 2
     private var maxXYForZoom: Long = 0
     private val tileLoader: TileLoader
@@ -60,15 +58,12 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
         }
 
     init {
-        tileLoader = TileLoader(tilesProvider)
-        tilesProvider.selectedTileTypeProperty.addListener { _, _, selectedTileType ->
+        tileLoader = TileLoader(tilesProvider) {
             tilesLayer.children.clear()
-            tiles = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
             minX = -100
             maxX = -100
             minY = -100
             maxY = -100
-            log.debug { "Selected TileType = $selectedTileType" }
             loadTiles()
         }
         children += tilesLayer
@@ -221,7 +216,7 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
     }
 
     private fun addTile(x: Long, y: Long) {
-        val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
+        val tile = tileLoader.tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
         tilesLayer.children.add(tile.apply {
             translateX = 256 * x.toDouble()
             translateY = 256 * y.toDouble()
@@ -229,7 +224,7 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
     }
 
     private fun removeTile(x: Long, y: Long) {
-        val tile = tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
+        val tile = tileLoader.tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
         tilesLayer.children.remove(tile)
     }
 

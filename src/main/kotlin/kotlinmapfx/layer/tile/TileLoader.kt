@@ -5,20 +5,30 @@ import kotlinmapfx.OSM_TILE_URL
 import kotlinmapfx.layer.tile.Tile
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
+import mu.KotlinLogging
 import java.awt.image.RenderedImage
 import java.io.File
 import java.nio.file.Files
 import javax.imageio.ImageIO
 
+private val log = KotlinLogging.logger { }
+
 /**
  * @author Mateusz Becker
  */
-class TileLoader(val provider: TilesProvider) {
+class TileLoader(val provider: TilesProvider, val onRefresh: () -> Unit) {
 
-    val cacheDir = System.getProperty("user.home") + OSM_CACHE
+    var tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
+
+    private val cacheDir = System.getProperty("user.home") + OSM_CACHE
 
     init {
         Files.createDirectories(File(cacheDir).toPath())
+        provider.selectedTileTypeProperty.addListener { _, _, selectedTileType ->
+            tiles = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
+            log.debug { "Selected TileType = $selectedTileType" }
+            onRefresh.invoke()
+        }
     }
 
     fun generateTile(zoom: Int, x: Long, y: Long): Tile {
