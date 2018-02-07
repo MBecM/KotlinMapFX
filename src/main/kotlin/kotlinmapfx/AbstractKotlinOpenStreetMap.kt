@@ -15,6 +15,7 @@ import javafx.scene.shape.Rectangle
 import kotlinmapfx.layer.Layer
 import kotlinmapfx.layer.ComponentLayer
 import kotlinmapfx.layer.LayeredMap
+import kotlinmapfx.layer.tile.SimpleOSMTilesProvider
 import kotlinmapfx.layer.tile.TilesProvider
 import mu.KotlinLogging
 import kotlin.properties.ReadOnlyProperty
@@ -24,7 +25,7 @@ private val log = KotlinLogging.logger {  }
 /**
  * @author Mateusz Becker
  */
-abstract class AbstractKotlinOpenStreetMap(override val tilesProvider: TilesProvider, private val tiledLayeredView: TiledLayeredView = DefaultTiledLayeredView(tilesProvider), val controller: MapController = DefaultMapController(tiledLayeredView)) : Region(), KotlinOpenStreetMap, MapOperations by tiledLayeredView, LayeredMap by tiledLayeredView {
+abstract class AbstractKotlinOpenStreetMap(override val tilesProvider: TilesProvider = SimpleOSMTilesProvider(), private val tiledLayeredView: TiledLayeredView = DefaultTiledLayeredView(tilesProvider), val controller: MapController = DefaultMapController(tiledLayeredView)) : Region(), KotlinOpenStreetMap, MapOperations by tiledLayeredView, LayeredMap by tiledLayeredView {
 
     private var coordinateConsumer: ((LatLon) -> Unit)? = null
     private var consumerButton: MouseButton? = null

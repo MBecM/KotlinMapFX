@@ -17,6 +17,7 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import kotlinmapfx.OSM_TILE_URL
 import kotlinmapfx.component.*
+import kotlinmapfx.layer.tile.ExtendedTilesProvider
 import kotlinmapfx.layer.tile.TileType
 import kotlinmapfx.layer.tile.TilesProvider
 import mu.KotlinLogging
@@ -28,7 +29,7 @@ private val log = KotlinLogging.logger { }
  */
 class Main : Application() {
 
-    val map: MyMap
+    val map: MyMap = MyMap()
     val marker: Marker = TestMarker(LatLon(54.574534565, 18.3908765443), "")
     val shape = PolygonShape()
     override fun start(primaryStage: Stage?) {
@@ -71,18 +72,9 @@ class Main : Application() {
             map.markerLayer.addMarker(marker)
         }
     }
-
-    init {
-        val defaultType = TileType(OSM_TILE_URL, "OpenStreetMap")
-        val stamenWatercolorType = TileType("http://c.tile.stamen.com/watercolor/", "StamenWatercolor")
-        val stamenTonerType = TileType("http://a.tile.stamen.com/toner/", "StamenToner")
-        val transportType = TileType("http://a.tile2.opencyclemap.org/transport/", "Transport")
-        val wikimediaType = TileType("https://maps.wikimedia.org/osm-intl/", "Wikimedia")
-        map = MyMap(TilesProvider(defaultType, listOf(defaultType, stamenTonerType, stamenWatercolorType, transportType, wikimediaType)))
-    }
 }
 
-class MyMap(override val tilesProvider: TilesProvider) : AbstractKotlinOpenStreetMap(tilesProvider) {
+class MyMap(override val tilesProvider: TilesProvider = ExtendedTilesProvider()) : AbstractKotlinOpenStreetMap(tilesProvider) {
     val markerLayer: Layer by layer()
 }
 

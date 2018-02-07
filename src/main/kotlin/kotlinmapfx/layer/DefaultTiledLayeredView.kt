@@ -68,6 +68,7 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
             maxX = -100
             minY = -100
             maxY = -100
+            log.debug { "Selected TileType = $selectedTileType" }
             loadTiles()
         }
         children += tilesLayer
