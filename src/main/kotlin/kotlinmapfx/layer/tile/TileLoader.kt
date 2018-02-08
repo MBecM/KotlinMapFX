@@ -1,8 +1,6 @@
 package kotlinmapfx.layer.tile
 
 import kotlinmapfx.OSM_CACHE
-import kotlinmapfx.OSM_TILE_URL
-import kotlinmapfx.layer.tile.Tile
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import mu.KotlinLogging
@@ -16,7 +14,7 @@ private val log = KotlinLogging.logger { }
 /**
  * @author Mateusz Becker
  */
-class TileLoader(val provider: TilesProvider, val onRefresh: () -> Unit) {
+class TileLoader(private val provider: TilesProvider, onTileChange: () -> Unit) {
 
     var tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
 
@@ -27,7 +25,7 @@ class TileLoader(val provider: TilesProvider, val onRefresh: () -> Unit) {
         provider.selectedTileTypeProperty.addListener { _, _, selectedTileType ->
             tiles = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
             log.debug { "Selected TileType = $selectedTileType" }
-            onRefresh.invoke()
+            onTileChange.invoke()
         }
     }
 
