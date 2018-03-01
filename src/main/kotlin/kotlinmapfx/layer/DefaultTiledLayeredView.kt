@@ -37,7 +37,7 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
                 maxXYForZoom = 1L shl field
                 log.debug("Current zoom: $value")
                 tilesLayer.children.clear()
-                layers.forEach { it.refresh() }
+//                layers.forEach { it.refresh() }
                 minX = -100
                 maxX = -100
                 minY = -100
@@ -96,6 +96,7 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
             }
             tileScale = 1 + zoomTileScale * 0.25
         }
+        layers.forEach { it.refresh() }
         val point = getLocalCoordinate(latlon)
         translateX = -point.x + x
         translateY = -point.y + y
