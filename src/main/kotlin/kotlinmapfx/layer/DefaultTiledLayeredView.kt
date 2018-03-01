@@ -103,6 +103,10 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
         return LatLon(lat, lon)
     }
 
+    override fun screenToLocal(screenX: Double, screenY: Double): Point2D {
+        return parent.screenToLocal(screenX, screenY)
+    }
+
     override fun shift(dx: Double, dy: Double) {
         translateX += dx
         translateY += dy

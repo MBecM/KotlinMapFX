@@ -3,12 +3,10 @@ package kotlinmapfx.component
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Point2D
 import javafx.scene.Node
+import javafx.scene.control.Button
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
-import javafx.scene.shape.Circle
-import javafx.scene.shape.LineTo
-import javafx.scene.shape.MoveTo
-import javafx.scene.shape.PathElement
+import javafx.scene.shape.*
 import kotlinmapfx.coord.LatLon
 
 /**
@@ -22,8 +20,8 @@ interface Anchor : DraggableMarker {
 
 class CircleAnchor(val coord: LatLon, override val pathElement: PathElement = LineTo(), radius: Double = 7.0, color: Color = Color.BLACK) : Circle(radius, color), Anchor {
 
-    private var x: Double = 0.0
-    private var y: Double = 0.0
+    private var dx: Double = 0.0
+    private var dy: Double = 0.0
 
     override var color: Color = color
         set(value) {
@@ -42,25 +40,17 @@ class CircleAnchor(val coord: LatLon, override val pathElement: PathElement = Li
         isVisible = editable
 
         addEventHandler(MouseEvent.MOUSE_PRESSED) {
-            x = it.sceneX
-            y = it.sceneY
+            dx = it.sceneX
+            dy = it.sceneY
             it.consume()
         }
 
         addEventHandler(MouseEvent.MOUSE_DRAGGED) {
-            refresh(Point2D(translateX + (it.sceneX - x), translateY + (it.sceneY - y)))
-            x = it.sceneX
-            y = it.sceneY
+            refresh(Point2D(translateX + (it.sceneX - dx), translateY + (it.sceneY - dy)))
+            dx = it.sceneX
+            dy = it.sceneY
             it.consume()
         }
-
-        addEventHandler(MouseEvent.MOUSE_RELEASED) {
-            //          val d=  parent.screenTo(Point2D(it.screenX, it.screenY))
-            localCoordinate = Point2D(it.sceneX, it.sceneY)
-            it.consume()
-            TODO("local coordinate by scene but should be by map size.")
-        }
-
     }
 
     override fun refresh(localCoordinate: Point2D) {

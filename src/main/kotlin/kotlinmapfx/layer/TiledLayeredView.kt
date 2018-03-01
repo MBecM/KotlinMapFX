@@ -18,6 +18,7 @@ interface MovableMap {
 interface CoordinateConverter {
     fun getCoordinate(x: Double, y: Double): LatLon
     fun getLocalCoordinate(coord: LatLon): Point2D
+    fun screenToLocal(screenX: Double, screenY: Double) : Point2D
 }
 
 interface MapOperations {

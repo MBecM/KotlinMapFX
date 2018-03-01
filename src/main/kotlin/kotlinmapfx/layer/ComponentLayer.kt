@@ -1,8 +1,10 @@
 package kotlinmapfx.layer
 
 import javafx.beans.value.ChangeListener
+import javafx.event.EventHandler
 import javafx.geometry.Point2D
 import javafx.scene.Group
+import javafx.scene.input.MouseEvent
 import kotlinmapfx.component.DraggableMarker
 import kotlinmapfx.component.Marker
 import kotlinmapfx.component.Route
@@ -18,6 +20,7 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
     private val coordListeners = mutableMapOf<Marker, ChangeListener<LatLon>>()
 
     private val localCoordlisteners = mutableMapOf<Marker, ChangeListener<Point2D>>()
+    private val mouseReleaseEvents = mutableMapOf<Marker, EventHandler<MouseEvent>>()
 
     private val shapes = mutableListOf<Shape>()
 
@@ -61,6 +64,13 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
         }
         marker.localCoordinateProperty.addListener(listener)
         localCoordlisteners.put(marker, listener)
+
+        val releaseEvent = EventHandler<MouseEvent> {
+            marker.localCoordinate = coordinateConverter.screenToLocal(it.screenX - it.x, it.screenY - it.y)
+            it.consume()
+        }
+        marker.getView().addEventHandler(MouseEvent.MOUSE_RELEASED, releaseEvent)
+        mouseReleaseEvents.put(marker, releaseEvent)
     }
 
 
