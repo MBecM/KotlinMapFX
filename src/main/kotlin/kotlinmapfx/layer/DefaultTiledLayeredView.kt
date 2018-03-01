@@ -5,9 +5,6 @@ import kotlinmapfx.layer.tile.TileLoader
 import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
-import kotlinmapfx.OSM_TILE_URL
-import kotlinmapfx.layer.tile.Tile
-import kotlinmapfx.layer.tile.TileType
 import kotlinmapfx.layer.tile.TilesProvider
 import mu.KotlinLogging
 import kotlin.math.*
@@ -47,6 +44,8 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
                 maxY = -100
             }
         }
+    var zoomTileScale = 0
+    var tileScale = 1.0
 
     private var _center: LatLon? = null
     override val center: LatLon
@@ -82,7 +81,21 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
 
     override fun zoom(delta: Double, x: Double, y: Double) {
         val latlon = getCoordinate(x, y)
-        if (delta > 0) zoom++ else zoom--
+        if (delta > 0) {
+            zoomTileScale++
+            if (zoomTileScale == 4) {
+                zoom++
+                zoomTileScale = 0
+            }
+            tileScale = 1 + zoomTileScale * 0.25
+        } else {
+            zoomTileScale--
+            if (zoomTileScale < 0) {
+                zoom--
+                zoomTileScale = 3
+            }
+            tileScale = 1 + zoomTileScale * 0.25
+        }
         val point = getLocalCoordinate(latlon)
         translateX = -point.x + x
         translateY = -point.y + y
@@ -92,12 +105,12 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
     override fun getLocalCoordinate(coord: LatLon): Point2D {
         val x = (coord.lon + 180) * maxXYForZoom / 360.0
         val y = (1 - Math.log(tan(Math.toRadians(coord.lat)) + 1 / cos(Math.toRadians(coord.lat))) / PI) * (1 shl zoom - 1)
-        return Point2D(x * 256, y * 256)
+        return Point2D(x * (256 * tileScale), y * (256 * tileScale))
     }
 
     override fun getCoordinate(x: Double, y: Double): LatLon {
-        val tx = (translateX - x) / -256.0
-        val ty = (translateY - y) / -256.0
+        val tx = (translateX - x) / (-256.0 * tileScale)
+        val ty = (translateY - y) / (-256.0 * tileScale)
         val lat = Math.toDegrees(atan(sinh(PI - (ty * 2 * PI) / maxXYForZoom)))
         val lon = (tx * 360 / maxXYForZoom) - 180
         return LatLon(lat, lon)
@@ -116,10 +129,10 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
     private fun loadTiles() {
         val width: Double = parent?.layoutBounds?.width ?: 0.0
         val height: Double = parent?.layoutBounds?.height ?: 0.0
-        val newMinX = max(0L, abs(-translateX / 256).toLong() - overlap)
-        val newMaxX = min(maxXYForZoom, abs((-translateX + width) / 256).toLong() + overlap)
-        val newMinY = max(0L, abs(-translateY / 256).toLong() - overlap)
-        val newMaxY = min(maxXYForZoom, abs((-translateY + height) / 256).toLong() + overlap)
+        val newMinX = max(0L, abs(-translateX / (256 * tileScale)).toLong() - overlap)
+        val newMaxX = min(maxXYForZoom, abs((-translateX + width) / (256 * tileScale)).toLong() + overlap)
+        val newMinY = max(0L, abs(-translateY / (256 * tileScale)).toLong() - overlap)
+        val newMaxY = min(maxXYForZoom, abs((-translateY + height) / (256 * tileScale)).toLong() + overlap)
 
         _center = getCoordinate(width / 2, height / 2)
 
@@ -217,13 +230,25 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
             minY = newMinY
             maxY = newMaxY
         }
+
+        for (x in minX..maxX) {
+            for (y in minY..maxY) {
+                val tile = tileLoader.tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
+                tile.apply {
+                    scale.x = tileScale
+                    scale.y = tileScale
+                    translateX = 256 * tileScale * x.toDouble()
+                    translateY = 256 * tileScale * y.toDouble()
+                }
+            }
+        }
     }
 
     private fun addTile(x: Long, y: Long) {
         val tile = tileLoader.tiles[zoom].getOrPut(x) { mutableMapOf() }.getOrPut(y) { tileLoader.generateTile(zoom, x, y) }
         tilesLayer.children.add(tile.apply {
-            translateX = 256 * x.toDouble()
-            translateY = 256 * y.toDouble()
+            translateX = 256 * tileScale * x.toDouble()
+            translateY = 256 * tileScale * y.toDouble()
         })
     }
 
