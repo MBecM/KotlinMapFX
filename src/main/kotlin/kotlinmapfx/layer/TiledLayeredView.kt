@@ -22,7 +22,7 @@ interface CoordinateConverter {
 }
 
 interface MapOperations {
-    var zoom: Int
+    val zoom: Int
     val center: LatLon
     fun center(coord: LatLon, zoom: Int = this.zoom)
 }

@@ -30,21 +30,32 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
     private val tilesLayer = Group()
     private val layers = mutableListOf<Layer>()
 
-    override var zoom: Int = 3
+    private var _zoom: Int = 1
         set(value) {
             if (field != value) {
                 field = value
                 maxXYForZoom = 1L shl field
+                zoomTileScale = 0
                 log.debug("Current zoom: $value")
                 tilesLayer.children.clear()
-//                layers.forEach { it.refresh() }
+                layers.forEach { it.refresh() }
                 minX = -100
                 maxX = -100
                 minY = -100
                 maxY = -100
+
             }
         }
+    override val zoom: Int
+        get() {
+            return _zoom
+        }
+    
     var zoomTileScale = 0
+        set(value) {
+            field = value
+            tileScale = 1 + value * 0.25
+        }
     var tileScale = 1.0
 
     private var _center: LatLon? = null
@@ -70,7 +81,7 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
     }
 
     override fun center(coord: LatLon, zoom: Int) {
-        this.zoom = zoom
+        this._zoom = zoom
         val localPoint = getLocalCoordinate(coord)
         val width: Double = parent?.layoutBounds?.width ?: 0.0
         val height: Double = parent?.layoutBounds?.height ?: 0.0
@@ -84,19 +95,19 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
         if (delta > 0) {
             zoomTileScale++
             if (zoomTileScale == 4) {
-                zoom++
+                _zoom++
                 zoomTileScale = 0
+            } else {
+                layers.forEach { it.refresh() }
             }
-            tileScale = 1 + zoomTileScale * 0.25
         } else {
             zoomTileScale--
             if (zoomTileScale < 0) {
-                zoom--
+                _zoom--
                 zoomTileScale = 3
+                layers.forEach { it.refresh() }
             }
-            tileScale = 1 + zoomTileScale * 0.25
         }
-        layers.forEach { it.refresh() }
         val point = getLocalCoordinate(latlon)
         translateX = -point.x + x
         translateY = -point.y + y
