@@ -78,7 +78,7 @@ class Main : Application() {
     }
 }
 
-class MyMap(override val tilesProvider: TilesProvider = ExtendedTilesProvider()) : AbstractKotlinOpenStreetMap(tilesProvider) {
+class MyMap(tilesProvider: TilesProvider = ExtendedTilesProvider()) : AbstractKotlinOpenStreetMap(tilesProvider) {
     val markerLayer: Layer by layer()
 }
 
