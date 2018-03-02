@@ -1,6 +1,7 @@
 package kotlinmapfx.component
 
 import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.scene.Group
 import javafx.scene.Node
@@ -14,7 +15,7 @@ import kotlinmapfx.coord.LatLon
  * @author Mateusz Becker
  */
 interface Shape {
-    val anchors: ObservableList<Anchor>
+    val anchors: List<Anchor>
     var anchorFactory: (index: Int, latLon: LatLon) -> Anchor
     var editable: Boolean
     var size: Double
@@ -28,7 +29,11 @@ interface Shape {
 abstract class AbstractShape : Group(), Shape {
 
     protected val shape: Path = Path()
-    override val anchors: ObservableList<Anchor> = FXCollections.observableArrayList()
+    protected val mutableAnchors: ObservableList<Anchor> = FXCollections.observableArrayList()
+    override val anchors: List<Anchor>
+        get() {
+            return mutableAnchors.toList()
+        }
     override var editable: Boolean = false
         set(value) {
             field = value
@@ -54,6 +59,22 @@ abstract class AbstractShape : Group(), Shape {
         children += shape
         shape.strokeWidth = size
         shape.fill = Color.color(color.red, color.green, color.blue, colorOpacity)
+
+        mutableAnchors.addListener { c: ListChangeListener.Change<out Anchor> ->
+            while (c.next()) {
+                if (c.wasAdded()) {
+
+                }
+                if (c.wasRemoved()) {
+                    c.removed.forEach {
+                        children -= it.getView()
+                        shape.elements -= it.pathElement
+//                        anchors += it
+                    }
+                }
+            }
+        }
+
     }
 
     override fun getView(): Node = this
@@ -78,11 +99,11 @@ class PolygonShape : AbstractShape() {
 
     override fun setPositions(positions: List<LatLon>) {
         shape.elements.clear()
-        anchors.clear()
+        mutableAnchors.clear()
         positions.mapIndexed(anchorFactory).forEach {
             children += it.getView()
             shape.elements += it.pathElement
-            anchors += it
+            mutableAnchors += it
         }
         if (closeable) {
             shape.elements += ClosePath()
