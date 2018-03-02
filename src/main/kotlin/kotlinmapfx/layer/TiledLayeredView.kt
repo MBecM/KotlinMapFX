@@ -25,6 +25,8 @@ interface MapOperations {
     val zoom: Int
     val center: LatLon
     fun center(coord: LatLon, zoom: Int = this.zoom)
+    fun zoomUp()
+    fun zoomDown()
 }
 
 interface LayeredMap {

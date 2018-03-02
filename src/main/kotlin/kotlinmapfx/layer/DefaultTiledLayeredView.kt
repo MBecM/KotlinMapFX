@@ -105,13 +105,25 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
             if (zoomTileScale < 0) {
                 _zoom--
                 zoomTileScale = 3
-                layers.forEach { it.refresh() }
             }
+            layers.forEach { it.refresh() }
         }
         val point = getLocalCoordinate(latlon)
         translateX = -point.x + x
         translateY = -point.y + y
         loadTiles()
+    }
+
+    override fun zoomUp() {
+        val width: Double = parent?.layoutBounds?.width ?: 0.0
+        val height: Double = parent?.layoutBounds?.height ?: 0.0
+        zoom(1.0, width / 2, height / 2)
+    }
+
+    override fun zoomDown() {
+        val width: Double = parent?.layoutBounds?.width ?: 0.0
+        val height: Double = parent?.layoutBounds?.height ?: 0.0
+        zoom(-1.0, width / 2, height / 2)
     }
 
     override fun getLocalCoordinate(coord: LatLon): Point2D {

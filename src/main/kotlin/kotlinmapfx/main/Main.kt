@@ -46,11 +46,11 @@ class Main : Application() {
             root.bottom = Label("Status: ONLINE")
             root.right = VBox(Button("Button on right +").apply {
                 setOnAction {
-                    map.center(map.center, map.zoom + 1)
+                    map.zoomUp()
                 }
             },Button("Button on right -").apply {
                 setOnAction {
-                    map.center(map.center, map.zoom - 1)
+                    map.zoomDown()
                 }
             }, ComboBox<TileType>(FXCollections.observableArrayList(map.tilesProvider.servers)).apply {
                 value = map.tilesProvider.selectedTileType
