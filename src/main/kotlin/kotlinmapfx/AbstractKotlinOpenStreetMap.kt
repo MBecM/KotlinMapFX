@@ -39,6 +39,7 @@ abstract class AbstractKotlinOpenStreetMap(tilesProvider: TilesProvider = Simple
                 StackPane.setAlignment(this, Pos.BOTTOM_RIGHT)
             }
         }
+        overlay.isPickOnBounds = false
         overlay.prefWidthProperty().bind(mapClip.widthProperty())
         overlay.prefHeightProperty().bind(mapClip.heightProperty())
         children += overlay
