@@ -16,6 +16,7 @@ interface Anchor : DraggableMarker {
     val pathElement: PathElement
     var editable: Boolean
     var color: Color
+    var size: Double
 }
 
 class CircleAnchor(val coord: LatLon, override val pathElement: PathElement = LineTo(), radius: Double = 7.0, color: Color = Color.BLACK) : Circle(radius, color), Anchor {
@@ -27,6 +28,11 @@ class CircleAnchor(val coord: LatLon, override val pathElement: PathElement = Li
         set(value) {
             field = value
             fill = value
+        }
+    override var size: Double = radius
+        set(value) {
+            field = value
+            radius = value
         }
     override val coordinateProperty: SimpleObjectProperty<LatLon> = SimpleObjectProperty(coord)
     override val localCoordinateProperty: SimpleObjectProperty<Point2D> = SimpleObjectProperty(Point2D(0.0, 0.0))
