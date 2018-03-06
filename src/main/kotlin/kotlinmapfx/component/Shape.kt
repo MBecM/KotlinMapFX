@@ -60,20 +60,20 @@ abstract class AbstractShape : Group(), Shape {
         shape.strokeWidth = size
         shape.fill = Color.color(color.red, color.green, color.blue, colorOpacity)
 
-        mutableAnchors.addListener { c: ListChangeListener.Change<out Anchor> ->
-            while (c.next()) {
-                if (c.wasAdded()) {
-
-                }
-                if (c.wasRemoved()) {
-                    c.removed.forEach {
-                        children -= it.getView()
-                        shape.elements -= it.pathElement
-//                        anchors += it
-                    }
-                }
-            }
-        }
+//        mutableAnchors.addListener { c: ListChangeListener.Change<out Anchor> ->
+//            while (c.next()) {
+//                if (c.wasAdded()) {
+//
+//                }
+//                if (c.wasRemoved()) {
+//                    c.removed.forEach {
+//                        children -= it.getView()
+//                        shape.elements -= it.pathElement
+////                        anchors += it
+//                    }
+//                }
+//            }
+//        }
 
     }
 
