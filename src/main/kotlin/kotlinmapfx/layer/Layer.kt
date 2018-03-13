@@ -2,7 +2,6 @@ package kotlinmapfx.layer
 
 import javafx.scene.Group
 import kotlinmapfx.component.Marker
-import kotlinmapfx.component.Route
 import kotlinmapfx.component.Shape
 
 /**
@@ -18,7 +17,4 @@ interface Layer {
 
     fun addShape(shape: Shape)
     fun removeShape(shape: Shape)
-
-    fun addRoute(route: Route)
-    fun removeRoute(route: Route)
 }

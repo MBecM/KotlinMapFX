@@ -7,7 +7,6 @@ import javafx.scene.Group
 import javafx.scene.input.MouseEvent
 import kotlinmapfx.component.DraggableMarker
 import kotlinmapfx.component.Marker
-import kotlinmapfx.component.Route
 import kotlinmapfx.component.Shape
 import kotlinmapfx.coord.LatLon
 
@@ -91,14 +90,6 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
         shape.anchors.forEach {
             removeDraggableMarkerAndListener(it)
         }
-    }
-
-    override fun addRoute(route: Route) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun removeRoute(route: Route) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun refresh() {
