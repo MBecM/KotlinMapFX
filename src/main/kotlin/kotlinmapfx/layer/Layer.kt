@@ -15,6 +15,6 @@ interface Layer {
     fun addMarker(marker: Marker)
     fun removeMarker(marker: Marker)
 
-    fun addShape(shape: Shape)
-    fun removeShape(shape: Shape)
+    fun addShape(shape: Shape<*>)
+    fun removeShape(shape: Shape<*>)
 }

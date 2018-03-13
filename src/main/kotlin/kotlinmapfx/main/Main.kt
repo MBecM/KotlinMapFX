@@ -31,7 +31,7 @@ class Main : Application() {
 
     val map: MyMap = MyMap()
     val marker: Marker = TestMarker(LatLon(54.574534565, 18.3908765443), "")
-    val shape = PolygonShape()
+    val shape = PolygonShape(listOf(LatLon(54.5745, 18.3908), LatLon(54.6745, 18.2908), LatLon(54.7745, 18.5908)))
     override fun start(primaryStage: Stage?) {
         primaryStage?.apply {
 
@@ -71,7 +71,6 @@ class Main : Application() {
             }
             map.center(LatLon(54.574534565, 18.3908765443), 16)
 
-            shape.setPositions(listOf(LatLon(54.5745, 18.3908), LatLon(54.6745, 18.2908), LatLon(54.7745, 18.5908)))
             map.markerLayer.addShape(shape)
             map.markerLayer.addMarker(marker)
         }

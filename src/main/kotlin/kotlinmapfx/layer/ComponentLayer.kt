@@ -21,7 +21,7 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
     private val localCoordlisteners = mutableMapOf<Marker, ChangeListener<Point2D>>()
     private val mouseReleaseEvents = mutableMapOf<Marker, EventHandler<MouseEvent>>()
 
-    private val shapes = mutableListOf<Shape>()
+    private val shapes = mutableListOf<Shape<*>>()
 
     override fun addMarker(marker: Marker) {
         markers += marker
@@ -76,7 +76,7 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
         }
     }
 
-    override fun addShape(shape: Shape) {
+    override fun addShape(shape: Shape<*>) {
         children += shape.getView()
         shapes += shape
         shape.anchors.forEach {
@@ -84,7 +84,7 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
         }
     }
 
-    override fun removeShape(shape: Shape) {
+    override fun removeShape(shape: Shape<*>) {
         children -= shape.getView()
         shapes -= shape
         shape.anchors.forEach {
@@ -101,7 +101,7 @@ class ComponentLayer(override val coordinateConverter: CoordinateConverter) : Gr
         marker.refresh(coordinateConverter.getLocalCoordinate(marker.coordinate))
     }
 
-    private fun refreshShape(shape: Shape) {
+    private fun refreshShape(shape: Shape<*>) {
         shape.anchors.forEach {
             refreshMarker(it)
         }

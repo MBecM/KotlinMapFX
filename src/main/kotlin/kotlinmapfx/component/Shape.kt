@@ -14,23 +14,21 @@ import kotlinmapfx.coord.LatLon
 /**
  * @author Mateusz Becker
  */
-interface Shape {
-    val anchors: List<Anchor>
-    var anchorFactory: (index: Int, latLon: LatLon) -> Anchor
+interface Shape<out T> where T : Anchor {
+    val anchors: List<T>
     var editable: Boolean
     var size: Double
     var color: Color
     var colorOpacity: Double
 
-    fun setPositions(positions: List<LatLon>)
     fun getView(): Node
 }
 
-abstract class AbstractShape : Group(), Shape {
+abstract class AbstractShape<T> : Group(), Shape<T> where T : Anchor {
 
     protected val shape: Path = Path()
-    protected val mutableAnchors: ObservableList<Anchor> = FXCollections.observableArrayList()
-    override val anchors: List<Anchor>
+    protected val mutableAnchors: ObservableList<T> = FXCollections.observableArrayList()
+    override val anchors: List<T>
         get() {
             return mutableAnchors.toList()
         }
@@ -80,7 +78,7 @@ abstract class AbstractShape : Group(), Shape {
     override fun getView(): Node = this
 }
 
-class PolygonShape : AbstractShape() {
+class PolygonShape(positions: List<LatLon>) : AbstractShape<CircleAnchor>() {
     private val closePath = ClosePath()
     var closeable: Boolean = false
         set(value) {
@@ -88,7 +86,7 @@ class PolygonShape : AbstractShape() {
             if (value) shape.elements += closePath else shape.elements -= closePath
         }
 
-    override var anchorFactory: (index: Int, latLon: LatLon) -> Anchor = { index, latLon ->
+    private var anchorFactory: (index: Int, latLon: LatLon) -> CircleAnchor = { index, latLon ->
         if (index == 0) {
             CircleAnchor(latLon, MoveTo())
         } else {
@@ -96,10 +94,7 @@ class PolygonShape : AbstractShape() {
         }
     }
 
-
-    override fun setPositions(positions: List<LatLon>) {
-        shape.elements.clear()
-        mutableAnchors.clear()
+    init {
         positions.mapIndexed(anchorFactory).forEach {
             children += it.getView()
             shape.elements += it.pathElement
