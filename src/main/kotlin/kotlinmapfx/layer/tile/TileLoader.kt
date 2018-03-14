@@ -14,7 +14,7 @@ private val log = KotlinLogging.logger { }
 /**
  * @author Mateusz Becker
  */
-class TileLoader(private val provider: TilesProvider, onTileChange: () -> Unit) {
+class TileLoader(private val provider: TilesProvider, private val onTileChange: () -> Unit) {
 
     var tiles: Array<MutableMap<Long, MutableMap<Long, Tile>>> = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
 
@@ -23,9 +23,8 @@ class TileLoader(private val provider: TilesProvider, onTileChange: () -> Unit) 
     init {
         Files.createDirectories(File(cacheDir).toPath())
         provider.selectedTileTypeProperty.addListener { _, _, selectedTileType ->
-            tiles = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
+            clearCache()
             log.debug { "Selected TileType = $selectedTileType" }
-            onTileChange.invoke()
         }
     }
 
@@ -48,6 +47,12 @@ class TileLoader(private val provider: TilesProvider, onTileChange: () -> Unit) 
             }
         }
         return tile
+    }
+
+    fun clearCache() {
+        tiles = Array(20) { _ -> mutableMapOf<Long, MutableMap<Long, Tile>>() }
+        log.debug { "Tile cache CLEARED!!!" }
+        onTileChange.invoke()
     }
 
     private fun checkCache(cacheFile: String): Image? {

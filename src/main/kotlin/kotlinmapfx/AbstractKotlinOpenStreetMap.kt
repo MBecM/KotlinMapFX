@@ -1,5 +1,9 @@
 package kotlinmapfx
 
+import javafx.animation.KeyFrame
+import javafx.animation.Timeline
+import javafx.application.Platform
+import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.control.Label
@@ -9,6 +13,7 @@ import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.Region
 import javafx.scene.layout.StackPane
 import javafx.scene.shape.Rectangle
+import javafx.util.Duration
 import kotlinmapfx.controller.DefaultMapController
 import kotlinmapfx.controller.MapController
 import kotlinmapfx.coord.LatLon
@@ -16,6 +21,8 @@ import kotlinmapfx.layer.*
 import kotlinmapfx.layer.tile.SimpleOSMTilesProvider
 import kotlinmapfx.layer.tile.TilesProvider
 import mu.KotlinLogging
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -29,6 +36,7 @@ abstract class AbstractKotlinOpenStreetMap(tilesProvider: TilesProvider = Simple
     private var coordinateConsumer: ((LatLon) -> Unit)? = null
     private var consumerButton: MouseButton? = null
     private val mapClip = Rectangle(200.0, 200.0)
+    private val cacheCleaner = Timeline()
 
     init {
         clip = mapClip
@@ -63,6 +71,14 @@ abstract class AbstractKotlinOpenStreetMap(tilesProvider: TilesProvider = Simple
             mapClip.width = bounds.width
             mapClip.height = bounds.height
         }
+
+        cacheCleaner.keyFrames += KeyFrame(Duration.hours(1.0), EventHandler { _ -> tiledLayeredView.clearCache()})
+        cacheCleaner.cycleCount = Int.MAX_VALUE
+        cacheCleaner.play()
+    }
+
+    fun disableCacheClear(){
+        cacheCleaner.stop()
     }
 
     override fun setCoordinateConsumer(consumerButton: MouseButton, consumer: (LatLon) -> Unit) {

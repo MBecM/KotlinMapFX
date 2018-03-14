@@ -31,6 +31,7 @@ interface MapOperations {
 
 interface LayeredMap {
     val tilesProvider: TilesProvider
+    fun clearCache()
     fun addLayer(layer: Layer)
     fun removeLayer(layer: Layer)
     fun swapLayers(layer: Layer, layer2: Layer)
