@@ -50,7 +50,7 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
         get() {
             return _zoom
         }
-    
+
     var zoomTileScale = 0
         set(value) {
             field = value
@@ -81,13 +81,19 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
     }
 
     override fun center(coord: LatLon, zoom: Int) {
-        this._zoom = zoom
-        val localPoint = getLocalCoordinate(coord)
-        val width: Double = parent?.layoutBounds?.width ?: 0.0
-        val height: Double = parent?.layoutBounds?.height ?: 0.0
-        translateX = -localPoint.x + (width / 2)
-        translateY = -localPoint.y + (height / 2)
-        loadTiles()
+        if (zoom > 19) {
+            log.warn { "Zoom value must be less then 20" }
+        } else if (zoom < 1) {
+            log.warn { "Zoom value must be greater then 0" }
+        } else {
+            this._zoom = zoom
+            val localPoint = getLocalCoordinate(coord)
+            val width: Double = parent?.layoutBounds?.width ?: 0.0
+            val height: Double = parent?.layoutBounds?.height ?: 0.0
+            translateX = -localPoint.x + (width / 2)
+            translateY = -localPoint.y + (height / 2)
+            loadTiles()
+        }
     }
 
     override fun zoom(delta: Double, x: Double, y: Double) {
@@ -95,16 +101,28 @@ class DefaultTiledLayeredView(override val tilesProvider: TilesProvider) : Group
         if (delta > 0) {
             zoomTileScale++
             if (zoomTileScale == 4) {
-                _zoom++
-                zoomTileScale = 0
+                val z = _zoom + 1
+                if (z < 20) {
+                    _zoom = z
+                    zoomTileScale = 0
+                } else {
+                    zoomTileScale = 3
+                    log.warn { "Zoom value must be less then 20" }
+                }
             } else {
                 layers.forEach { it.refresh() }
             }
         } else {
             zoomTileScale--
             if (zoomTileScale < 0) {
-                _zoom--
-                zoomTileScale = 3
+                val z = _zoom - 1
+                if (z > 0) {
+                    _zoom = z
+                    zoomTileScale = 3
+                } else {
+                    zoomTileScale = 0
+                    log.warn { "Zoom value must be greater then 0" }
+                }
             }
             layers.forEach { it.refresh() }
         }
